@@ -1,0 +1,295 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ═══ CHROME-STYLE LIGHT THEME ═══ */
+  --brand-primary: #1A73E8;
+  --brand-secondary: #174EA6;
+  --brand-accent: #1A73E8;
+  --brand-glow: rgba(26, 115, 232, 0.12);
+  
+  --bg-workspace: #F1F3F4;
+  --bg-activity-bar: #E8EAED;
+  --bg-sidebar: #F1F3F4;
+  --bg-editor: #FFFFFF;
+  
+  --bg-card: #FFFFFF;
+  --bg-card-hover: rgba(0, 0, 0, 0.04);
+  --border-subtle: #DADCE0;
+  --border-accent: #1A73E8;
+  
+  --text-primary: #202124;
+  --text-muted: #5F6368;
+  --status-bar-bg: #1A73E8;
+  
+  /* Overlay & Surface */
+  --overlay-bg: rgba(0, 0, 0, 0.04);
+  --overlay-bg-hover: rgba(0, 0, 0, 0.08);
+  --surface-raised: #FFFFFF;
+  --surface-sunken: #F1F3F4;
+  --tooltip-bg: #202124;
+  --tooltip-text: #FFFFFF;
+  --badge-bg: #EA4335;
+  
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease-out;
+  
+  --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --dropdown-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  
+  /* Status Colors */
+  --danger: #EA4335;
+  --success: #34A853;
+  --warning: #FBBC04;
+  
+  /* Backwards compatibility aliases */
+  --primary: var(--brand-primary);
+  --secondary: var(--brand-secondary);
+  --accent: var(--brand-accent);
+  --bg-main: var(--bg-editor);
+  --bg-secondary: var(--bg-workspace);
+  --bg-tertiary: var(--bg-sidebar);
+  --text-main: var(--text-primary);
+  --glass-bg: var(--bg-card);
+  --glass-card-bg: var(--bg-card);
+  --glass-border: var(--border-subtle);
+  --glass-border-hover: var(--border-accent);
+  --gradient-glow1: rgba(26, 115, 232, 0.08);
+}
+
+[data-theme='dark'] {
+  /* ═══ CHROME-STYLE DARK THEME ═══ */
+  --brand-primary: #8AB4F8;
+  --brand-secondary: #AECBFA;
+  --brand-accent: #8AB4F8;
+  --brand-glow: rgba(138, 180, 248, 0.15);
+  
+  --bg-workspace: #202124;
+  --bg-activity-bar: #35363A;
+  --bg-sidebar: #292A2D;
+  --bg-editor: #292A2D;
+  
+  --bg-card: #35363A;
+  --bg-card-hover: rgba(255, 255, 255, 0.06);
+  --border-subtle: #3C4043;
+  --border-accent: #8AB4F8;
+  
+  --text-primary: #E8EAED;
+  --text-muted: #9AA0A6;
+  --status-bar-bg: #35363A;
+  
+  /* Overlay & Surface */
+  --overlay-bg: rgba(255, 255, 255, 0.06);
+  --overlay-bg-hover: rgba(255, 255, 255, 0.10);
+  --surface-raised: #35363A;
+  --surface-sunken: #202124;
+  --tooltip-bg: #E8EAED;
+  --tooltip-text: #202124;
+  --badge-bg: #EA4335;
+  
+  --glass-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.16);
+  --dropdown-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.24);
+  
+  /* Status Colors */
+  --danger: #F28B82;
+  --success: #81C995;
+  --warning: #FDD663;
+
+  /* Backwards compatibility */
+  --primary: var(--brand-primary);
+  --secondary: var(--brand-secondary);
+  --accent: var(--brand-accent);
+  --bg-main: var(--bg-editor);
+  --bg-secondary: var(--bg-workspace);
+  --bg-tertiary: var(--bg-sidebar);
+  --text-main: var(--text-primary);
+  --glass-bg: var(--bg-card);
+  --glass-card-bg: var(--bg-card);
+  --glass-border: var(--border-subtle);
+  --glass-border-hover: var(--border-accent);
+  --gradient-glow1: rgba(138, 180, 248, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-workspace);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Utility Classes — Chrome-style flat cards */
+.glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
+}
+
+.glass-card:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--dropdown-shadow);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-in {
+  animation: slideUp 0.4s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Scrollbar — Chrome-style */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-workspace);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Buttons — Chrome-style */
+.btn {
+  padding: 10px 24px;
+  border-radius: 20px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background: var(--brand-primary);
+  color: white;
+  box-shadow: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px var(--brand-glow);
+  color: white;
+  opacity: 0.92;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  background: var(--overlay-bg);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+
+/* Fix for native option elements in dropdowns inheriting transparent background */
+option {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* Markdown Styles for AI Chat & Lesson Content */
+.markdown-body p {
+  margin-bottom: 8px;
+}
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+.markdown-body pre {
+  background-color: var(--overlay-bg-hover);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 12px;
+  overflow: auto;
+  margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.markdown-body code {
+  background-color: var(--overlay-bg);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9em;
+}
+.markdown-body pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.markdown-body ul, .markdown-body ol {
+  padding-left: 20px;
+  margin-bottom: 8px;
+}
+.markdown-body li {
+  margin-bottom: 4px;
+}
