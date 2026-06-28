@@ -42,7 +42,9 @@ const TerminalPanel = ({ activeProjectId, activeProjectFiles, theme }) => {
     fitAddonRef.current = fitAddon;
 
     // Connect to Socket.IO
-    const socketUrl = API_BASE_URL.replace('/api', '');
+    // In production, explicitly connect to '/' instead of an empty string
+    // to avoid resolving relative to the current route path (like /workspace/:id)
+    const socketUrl = import.meta.env.PROD ? '/' : 'http://localhost:5000';
     const socket = io(socketUrl);
     socketRef.current = socket;
 

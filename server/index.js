@@ -2232,7 +2232,8 @@ const AI_MODELS = [
   // Local (Ollama)
   { id: 'qwen3:8b',             name: 'Qwen3 8B',              provider: 'ollama',  description: 'Быстрая, для большинства задач',     size: '~5 GB' },
   { id: 'qwen3:14b',            name: 'Qwen3 14B',             provider: 'ollama',  description: 'Мощная, для сложных объяснений',     size: '~9 GB' },
-  { id: 'auto',                 name: 'Авто (Ollama)',          provider: 'ollama',  description: 'Автоматически: 8B → 14B по длине',  size: '' },
+  { id: 'gemma4:26b',           name: 'Gemma 4 26B',           provider: 'ollama',  description: 'Мощная модель Gemma',                size: '~15 GB' },
+  { id: 'auto',                 name: 'Авто (Gemini 2.5 Flash)', provider: 'gemini',  description: 'Использует Gemini 2.5 Flash',        size: 'Cloud' },
   // Cloud (Google Gemini)
   { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite', provider: 'gemini',  description: 'Самая быстрая, экономит лимиты',    size: 'Cloud' },
   { id: 'gemini-2.5-flash',      name: 'Gemini 2.5 Flash',      provider: 'gemini',  description: 'Быстрая и умная, для большинства задач', size: 'Cloud' },
@@ -2267,11 +2268,11 @@ const getOllamaModels = async () => {
   }
 };
 
-// ── Auto model resolution (Ollama only) ────────────────────
+// ── Auto model resolution ────────────────────
 const resolveModel = (model, messages = []) => {
-  if (model !== 'auto') return model || OLLAMA_DEFAULT_MODEL;
-  const totalLen = messages.reduce((acc, m) => acc + (m.content?.length || 0), 0);
-  return totalLen < 300 ? 'qwen3:8b' : 'qwen3:14b';
+  if (model === 'auto') return 'gemini-2.5-flash';
+  if (!model) return OLLAMA_DEFAULT_MODEL;
+  return model;
 };
 
 // ── System prompts ─────────────────────────────────────────
