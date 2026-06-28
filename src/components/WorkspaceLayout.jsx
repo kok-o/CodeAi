@@ -379,7 +379,7 @@ const WorkspaceLayout = () => {
               style={{ width: '54px', height: '48px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', color: colors.activityBarInactive }}
             >
               {user?.avatar_url ? (
-                <img src={user.avatar_url.startsWith('http') ? user.avatar_url : `${import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000'}${user.avatar_url}`} alt="Avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${colors.activityBarFg}` }} />
+                <img src={user.avatar_url.startsWith('http') ? user.avatar_url : `${import.meta.env.PROD ? '' : 'http://localhost:5000'}${user.avatar_url}`} alt="Avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: `2px solid ${colors.activityBarFg}` }} />
               ) : (
                 <UserCircle size={26} strokeWidth={1.5} />
               )}

@@ -4,7 +4,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import { io } from 'socket.io-client';
 import '@xterm/xterm/css/xterm.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
 
 const TerminalPanel = ({ activeProjectId, activeProjectFiles, theme }) => {
   const terminalRef = useRef(null);

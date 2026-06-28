@@ -14,7 +14,7 @@
 
 import { useRef, useState, useCallback } from 'react';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.PROD ? '/api' : 'http://localhost:5000/api';
 
 const useAiStream = () => {
   const [isStreaming, setIsStreaming] = useState(false);

@@ -255,7 +255,7 @@ const Workspace = () => {
         <div style={{ position: 'relative' }}>
           <div onClick={() => setShowAccountMenu(!showAccountMenu)} style={{ width: '48px', height: '48px', display: 'flex', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', color: colors.activityBarInactive }}>
             {user?.avatar_url ? (
-              <img src={user.avatar_url.startsWith('http') ? user.avatar_url : `${import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000'}${user.avatar_url}`} alt="Avatar" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
+              <img src={user.avatar_url.startsWith('http') ? user.avatar_url : `${import.meta.env.PROD ? '' : 'http://localhost:5000'}${user.avatar_url}`} alt="Avatar" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
             ) : (
               <UserCircle size={24} strokeWidth={1.5} />
             )}

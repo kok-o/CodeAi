@@ -82,7 +82,7 @@ const Navbar = () => {
   };
 
   const getBaseUrl = () => {
-    const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const url = import.meta.env.PROD ? '' : 'http://localhost:5000';
     return url.replace(/\/api$/, '');
   };
   const apiBase = getBaseUrl();

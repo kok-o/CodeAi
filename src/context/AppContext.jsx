@@ -447,7 +447,7 @@ export const AppProvider = ({ children }) => {
         
         const token = localStorage.getItem('codeai_token');
         if (token) {
-          fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/auth/study-time`, {
+          fetch(`${import.meta.env.PROD ? '/api' : 'http://localhost:5000/api'}/auth/study-time`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
