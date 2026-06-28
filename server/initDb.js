@@ -205,7 +205,10 @@ async function run() {
         study_time_seconds INTEGER DEFAULT 0,
         has_completed_onboarding BOOLEAN DEFAULT FALSE,
         avatar_url TEXT DEFAULT NULL,
-        cover_url TEXT DEFAULT NULL
+        cover_url TEXT DEFAULT NULL,
+        xp INTEGER DEFAULT 0,
+        streak INTEGER DEFAULT 0,
+        achievements TEXT[] DEFAULT ARRAY[]::TEXT[]
       )
     `);
 

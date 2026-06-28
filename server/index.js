@@ -41,6 +41,9 @@ const upgradeDatabaseSchema = async () => {
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL;`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS cover_url TEXT DEFAULT NULL;`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT FALSE;`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS xp INTEGER DEFAULT 0;`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS streak INTEGER DEFAULT 0;`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS achievements TEXT[] DEFAULT ARRAY[]::TEXT[];`);
     await pool.query(`ALTER TABLE courses ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT NULL;`);
 
     // Existing tables
