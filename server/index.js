@@ -2710,6 +2710,20 @@ ${code.slice(0, 4000)}
 });
 
 // ============================================================
+// SERVE FRONTEND STATIC FILES
+// ============================================================
+const frontendDistPath = path.join(__dirname, '../dist');
+app.use(express.static(frontendDistPath));
+
+app.get('*', (req, res) => {
+  // Let API and upload requests return 404 instead of index.html
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  res.sendFile(path.join(frontendDistPath, 'index.html'));
+});
+
+// ============================================================
 // START SERVER & WEBSOCKETS (Interactive Terminal)
 // ============================================================
 const server = createServer(app);
