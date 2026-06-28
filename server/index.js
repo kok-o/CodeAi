@@ -2232,16 +2232,16 @@ const AI_MODELS = [
   // Local (Ollama)
   { id: 'qwen3:8b',             name: 'Qwen3 8B',              provider: 'ollama',  description: 'Быстрая, для большинства задач',     size: '~5 GB' },
   { id: 'qwen3:14b',            name: 'Qwen3 14B',             provider: 'ollama',  description: 'Мощная, для сложных объяснений',     size: '~9 GB' },
-  { id: 'gemma4:26b',           name: 'Gemma 4 26B',           provider: 'ollama',  description: 'Мощная модель Gemma',                size: '~15 GB' },
   { id: 'auto',                 name: 'Авто (Gemini 2.5 Flash)', provider: 'gemini',  description: 'Использует Gemini 2.5 Flash',        size: 'Cloud' },
-  // Cloud (Google Gemini)
+  // Cloud (Google Gemini / Google AI Studio)
   { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite', provider: 'gemini',  description: 'Самая быстрая, экономит лимиты',    size: 'Cloud' },
   { id: 'gemini-2.5-flash',      name: 'Gemini 2.5 Flash',      provider: 'gemini',  description: 'Быстрая и умная, для большинства задач', size: 'Cloud' },
   { id: 'gemini-2.5-pro',        name: 'Gemini 2.5 Pro',        provider: 'gemini',  description: 'Лучшее качество, медленнее',        size: 'Cloud' },
+  { id: 'gemma-2-27b-it',        name: 'Gemma 2 27B',           provider: 'gemini',  description: 'Мощная модель Gemma (через Google)', size: 'Cloud' },
 ];
 
-// ── Helper: is this a Gemini model? ────────────────────────
-const isGeminiModel = (model) => model && model.startsWith('gemini-');
+// ── Helper: is this a Gemini API model? ────────────────────────
+const isGeminiModel = (model) => model && (model.startsWith('gemini-') || model.startsWith('gemma-'));
 
 // ── Ollama model cache (30s TTL) ───────────────────────────
 let _ollamaModelsCache = null;
