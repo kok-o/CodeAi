@@ -6,12 +6,14 @@ dotenv.config();
 
 const { Client } = pg;
 
-const dbConfig = {
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
-};
+const dbConfig = process.env.DATABASE_URL
+  ? { connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } }
+  : {
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'postgres',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432'),
+    };
 
 const DB_NAME = process.env.DB_NAME || 'codeai';
 
@@ -143,38 +145,46 @@ const seedCourses = [
 ];
 
 async function run() {
-  console.log("Initializing database connection...");
+  let client;
 
-  // 1. Connect to postgres database to ensure target DB exists
-  const pgClient = new Client({ ...dbConfig, database: 'postgres' });
-  try {
-    await pgClient.connect();
-    
-    // Check if codeai database exists
-    const res = await pgClient.query(`SELECT 1 FROM pg_database WHERE datname = $1`, [DB_NAME]);
-    if (res.rowCount === 0) {
-      console.log(`Database "${DB_NAME}" does not exist. Creating...`);
-      // CREATE DATABASE cannot run inside a transaction block, so running direct query
-      await pgClient.query(`CREATE DATABASE "${DB_NAME}"`);
-      console.log(`Database "${DB_NAME}" created successfully.`);
-    } else {
-      console.log(`Database "${DB_NAME}" already exists.`);
+  if (process.env.DATABASE_URL) {
+    // On Render/Production, database is already created and we use connectionString
+    console.log("Using DATABASE_URL, skipping database creation...");
+    client = new Client(dbConfig);
+    await client.connect();
+  } else {
+    // 1. Connect to postgres database to ensure target DB exists
+    const pgClient = new Client({ ...dbConfig, database: 'postgres' });
+    try {
+      await pgClient.connect();
+      
+      // Check if codeai database exists
+      const res = await pgClient.query(`SELECT 1 FROM pg_database WHERE datname = $1`, [DB_NAME]);
+      if (res.rowCount === 0) {
+        console.log(`Database "${DB_NAME}" does not exist. Creating...`);
+        // CREATE DATABASE cannot run inside a transaction block, so running direct query
+        await pgClient.query(`CREATE DATABASE "${DB_NAME}"`);
+        console.log(`Database "${DB_NAME}" created successfully.`);
+      } else {
+        console.log(`Database "${DB_NAME}" already exists.`);
+      }
+    } catch (err) {
+      console.error("Error checking or creating database:", err);
+      process.exit(1);
+    } finally {
+      await pgClient.end();
     }
-  } catch (err) {
-    console.error("Error checking or creating database:", err);
-    process.exit(1);
-  } finally {
-    await pgClient.end();
+
+    // 2. Connect to the newly created/existing target database
+    client = new Client({ ...dbConfig, database: DB_NAME });
+    await client.connect();
   }
 
-  // 2. Connect to the newly created/existing target database
-  const client = new Client({ ...dbConfig, database: DB_NAME });
   try {
-    await client.connect();
-    console.log(`Connected to database "${DB_NAME}". Creating tables...`);
+    console.log(`Connected to target database. Creating tables...`);
 
     // Reset database schema for clean migration
-    if (process.env.NODE_ENV !== 'production' || process.env.ALLOW_DROP_TABLES === 'true') {
+    if (process.env.NODE_ENV !== 'production' && process.env.ALLOW_DROP_TABLES === 'true') {
       console.warn("WARNING: Dropping all tables and resetting schema...");
       await client.query(`DROP TABLE IF EXISTS saved_code, progress, lesson_blocks, block_progress, quiz_attempts, lessons, courses, users, notifications, admin_logs CASCADE;`);
     } else {
