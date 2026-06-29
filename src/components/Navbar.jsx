@@ -133,11 +133,11 @@ const Navbar = () => {
           }
         }
         .mobile-hamburger {
-          display: none;
+          display: none !important;
         }
         @media (max-width: 767px) {
           .mobile-hamburger {
-            display: flex;
+            display: flex !important;
           }
         }
         .mobile-menu-overlay {
