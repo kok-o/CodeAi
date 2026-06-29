@@ -71,20 +71,20 @@ const Courses = () => {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'transparent' }}>
       
-      <main className="animate-in" style={{ flex: 1, padding: '40px' }}>
-        <header style={{ marginBottom: '40px' }}>
-            <h1 style={{ fontSize: '2.5rem', marginBottom: '8px' }}>{t('courseCatalog')}</h1>
+      <main className="animate-in page-main" style={{ flex: 1, padding: '40px' }}>
+        <header style={{ marginBottom: '32px' }}>
+            <h1 style={{ fontSize: 'clamp(1.6rem, 5vw, 2.5rem)', marginBottom: '8px' }}>{t('courseCatalog')}</h1>
             <p style={{ color: 'var(--text-muted)' }}>{t('courseCatalogSub')}</p>
         </header>
 
         {/* Filters and Search */}
-        <div style={{ display: 'flex', gap: '20px', marginBottom: '40px' }}>
-            <div className="glass" style={{ flex: 1, display: 'flex', alignItems: 'center', padding: '12px 20px', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+            <div className="glass" style={{ flex: 1, minWidth: '200px', display: 'flex', alignItems: 'center', padding: '12px 20px', gap: '12px' }}>
                 <Search size={20} color="var(--text-muted)" />
                 <input 
                     type="text" 
                     placeholder={t('searchPlaceholder')} 
-                    style={{ background: 'none', border: 'none', outline: 'none', color: 'var(--text-primary)', width: '100%', fontSize: '1rem' }}
+                    style={{ background: 'none', border: 'none', outline: 'none', color: 'var(--text-primary)', width: '100%', fontSize: '1rem', minHeight: 'unset' }}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -92,11 +92,11 @@ const Courses = () => {
             <div style={{ position: 'relative' }}>
                 <div 
                     className="glass" 
-                    style={{ display: 'flex', alignItems: 'center', padding: '12px 20px', gap: '8px', cursor: 'pointer' }}
+                    style={{ display: 'flex', alignItems: 'center', padding: '12px 20px', gap: '8px', cursor: 'pointer', height: '100%' }}
                     onClick={() => setShowFilterDropdown(!showFilterDropdown)}
                 >
                     <Filter size={20} />
-                    <span>{t('filters')}</span>
+                    <span style={{ whiteSpace: 'nowrap' }}>{t('filters')}</span>
                 </div>
                 {showFilterDropdown && (
                   <div className="glass" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', padding: '8px', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '150px' }}>
@@ -110,7 +110,8 @@ const Courses = () => {
                           color: 'var(--text-primary)', 
                           textAlign: 'left', 
                           borderRadius: '8px', 
-                          cursor: 'pointer' 
+                          cursor: 'pointer',
+                          minHeight: 'unset'
                         }}
                         onClick={() => {
                           setActiveLevel(level);
@@ -125,13 +126,13 @@ const Courses = () => {
             </div>
         </div>
 
-        {/* Sort Options */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', overflowX: 'auto', padding: '8px 4px 16px 4px', margin: '-8px -4px 0 -4px' }}>
+        {/* Sort Options - horizontally scrollable on mobile */}
+        <div className="filter-scroll" style={{ display: 'flex', gap: '8px', marginBottom: '28px', paddingBottom: '8px' }}>
             {sortOptions.map((opt) => (
                 <button 
                   key={opt.id} 
-                  className={activeSort === opt.id ? "btn btn-primary" : "btn btn-outline"}
-                  style={{ whiteSpace: 'nowrap', padding: '8px 24px' }}
+                  className={activeSort === opt.id ? "btn btn-primary" : "btn btn-secondary"}
+                  style={{ whiteSpace: 'nowrap', padding: '8px 20px', minHeight: 'unset', fontSize: '0.875rem' }}
                   onClick={() => setActiveSort(opt.id)}
                 >
                     {t(opt.labelKey)}

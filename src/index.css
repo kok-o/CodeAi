@@ -374,13 +374,45 @@ code, pre, .font-mono {
   .desktop-only {
     display: none !important;
   }
-  
+
+  /* Global word break — prevents text like "Программирование" from overflowing */
+  body {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
   /* Enforce touch target size */
-  .btn, button, input, select {
+  .btn, button, select {
     min-height: 44px;
   }
   .btn-sm {
     min-height: 36px;
+  }
+
+  /* Reduce excessive padding on mobile */
+  .page-main {
+    padding: 20px 16px 88px !important;
+  }
+
+  /* Horizontal scroll for filter rows */
+  .filter-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .filter-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide secondary info on very small screens */
+  .hide-on-mobile {
+    display: none !important;
   }
 }
 

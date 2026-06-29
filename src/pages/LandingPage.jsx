@@ -172,7 +172,7 @@ const LandingPage = () => {
       
       {/* Hero Section */}
       <section style={{
-        padding: '180px 40px 100px',
+        padding: 'clamp(100px, 15vw, 180px) clamp(16px, 5vw, 40px) clamp(60px, 8vw, 100px)',
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden'
@@ -207,11 +207,11 @@ const LandingPage = () => {
             {t('nextGenLearning')}
           </span>
           <h1 style={{
-            fontSize: 'max(4rem, 5vw)',
+            fontSize: 'clamp(2.2rem, 8vw, 5rem)',
             fontWeight: '900',
             lineHeight: 1.1,
             marginBottom: '24px',
-            letterSpacing: '-2px'
+            letterSpacing: 'clamp(-1px, -0.03em, -2px)'
           }}>
             {t('landingTitle1')} <br/>
             <span style={{
@@ -229,15 +229,19 @@ const LandingPage = () => {
           }}>
             {t('landingSub')}
           </p>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-            <NavLink to="/register" className="btn btn-primary" style={{ padding: '16px 32px', fontSize: '1.1rem' }}>
-              {t('startFree')} <ArrowRight size={20} />
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <NavLink to="/register" className="btn btn-primary" style={{ padding: '14px 28px', fontSize: '1rem' }}>
+              {t('startFree')} <ArrowRight size={18} />
+            </NavLink>
+            <NavLink to="/login" className="btn btn-secondary" style={{ padding: '14px 28px', fontSize: '1rem' }}>
+              {t('login')}
             </NavLink>
           </div>
         </motion.div>
 
-        {/* Hero Mockup Image Placeholder */}
+        {/* Hero Mockup - hidden on mobile to save space */}
         <div 
+          className="desktop-only"
           style={{ perspective: '1200px', maxWidth: '1000px', margin: '80px auto 0' }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
@@ -355,7 +359,7 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section style={{ padding: '100px 40px', maxWidth: '1200px', margin: '0 auto' }}>
+      <section style={{ padding: 'clamp(60px, 8vw, 100px) clamp(16px, 5vw, 40px)', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '80px' }}>
             <h2 style={{ fontSize: '2.5rem', marginBottom: '16px' }}>{t('drivenByIntel')}</h2>
             <p style={{ color: 'var(--text-muted)' }}>{t('platformThinksWithYou')}</p>

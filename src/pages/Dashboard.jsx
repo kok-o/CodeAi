@@ -112,7 +112,7 @@ const Dashboard = () => {
         }
       `}</style>
 
-      <main className="animate-in dashboard-main" style={{ flex: 1, overflowY: 'auto' }}>
+      <main className="animate-in dashboard-main page-main" style={{ flex: 1, overflowY: 'auto' }}>
 
         {/* ════ HERO HEADER ════ */}
         <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
@@ -130,7 +130,7 @@ const Dashboard = () => {
             <div style={{ fontSize: '0.85rem', color: 'var(--brand-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '8px' }}>
               {t('welcomeBack') || 'С возвращением'}
             </div>
-            <h1 style={{ fontSize: '2.6rem', fontWeight: 800, marginBottom: '12px', letterSpacing: '-1px', color: 'var(--text-primary)' }}>
+            <h1 style={{ fontSize: 'clamp(1.6rem, 5vw, 2.6rem)', fontWeight: 800, marginBottom: '12px', letterSpacing: '-1px', color: 'var(--text-primary)' }}>
               {user.name}
             </h1>
           </div>

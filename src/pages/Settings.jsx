@@ -254,11 +254,49 @@ const Settings = () => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'transparent', color: 'var(--text-primary)' }}>
-      <main className="animate-in" style={{ flex: 1, padding: '40px 48px', display: 'flex', gap: '30px', width: '100%', boxSizing: 'border-box' }}>
+      <style>{`
+        .settings-layout {
+          display: flex;
+          gap: 30px;
+          padding: 40px 48px;
+          flex-direction: row;
+        }
+        .settings-side-nav {
+          width: 220px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+        @media (max-width: 767px) {
+          .settings-layout {
+            padding: 20px 16px 88px;
+            flex-direction: column;
+            gap: 20px;
+          }
+          .settings-side-nav {
+            width: 100%;
+            flex-direction: row;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            gap: 4px;
+            scrollbar-width: none;
+          }
+          .settings-side-nav::-webkit-scrollbar { display: none; }
+          .settings-side-nav button {
+            flex-shrink: 0;
+            white-space: nowrap;
+            min-height: unset !important;
+            padding: 8px 16px !important;
+            font-size: 0.85rem !important;
+          }
+        }
+      `}</style>
+      <main className="animate-in settings-layout" style={{ flex: 1, width: '100%', boxSizing: 'border-box' }}>
         
         {/* Settings local navigation menu */}
-        <div style={{ width: '220px', display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '20px', paddingLeft: '10px', color: 'var(--text-primary)' }}>
+        <div className="settings-side-nav">
+          <h2 className="desktop-only" style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '20px', paddingLeft: '10px', color: 'var(--text-primary)' }}>
             {t('settings')}
           </h2>
           {[

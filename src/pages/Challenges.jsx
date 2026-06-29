@@ -153,7 +153,7 @@ const Challenges = () => {
         .ch-scroll::-webkit-scrollbar-thumb { background: var(--overlay-bg-hover); border-radius: 4px; }
       `}</style>
 
-      <main className="animate-in ch-scroll" style={{ flex: 1, padding: '40px 48px 80px', overflowY: 'auto' }}>
+      <main className="animate-in ch-scroll page-main" style={{ flex: 1, padding: '40px 48px 80px', overflowY: 'auto' }}>
         <div style={{ width: '100%' }}>
 
           {/* Header */}
@@ -172,7 +172,7 @@ const Challenges = () => {
           </div>
 
           {/* Stats Row */}
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '36px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '12px', marginBottom: '36px' }}>
             {[
               { label: tr('totalSolved', 'Решено всего'), value: stats.total, color: 'var(--brand-primary)', icon: <Target size={20} /> },
               { label: tDiff('easy'),         value: stats.easy,   color: 'var(--success, #34d399)', icon: <Target size={20} /> },
@@ -190,9 +190,9 @@ const Challenges = () => {
           </div>
 
           {/* Filters & Tabs Row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '28px' }}>
             {/* Search */}
-            <div style={{ position: 'relative', width: '280px' }}>
+            <div style={{ position: 'relative', width: '100%' }}>
               <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 value={search}
@@ -204,9 +204,9 @@ const Challenges = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
               {/* Tabs Segmented Control */}
-              <div style={{ display: 'inline-flex', background: 'var(--overlay-bg)', padding: '4px', borderRadius: '14px', border: '1px solid var(--overlay-bg)' }}>
+              <div className="filter-scroll" style={{ display: 'flex', background: 'var(--overlay-bg)', padding: '4px', borderRadius: '14px', border: '1px solid var(--overlay-bg)', flex: '1', minWidth: '0' }}>
                 {[
                   { id: 'all',      label: `${tr('all', 'Все')} (${challenges.length})` },
                   { id: 'solved',   label: `${tr('solved', 'Решено')} (${challenges.filter(c => c.user_status === 'accepted').length})` },
@@ -219,7 +219,7 @@ const Challenges = () => {
               </div>
 
               {/* Difficulty filters */}
-              <div style={{ display: 'inline-flex', background: 'var(--overlay-bg)', padding: '4px', borderRadius: '14px', border: '1px solid var(--overlay-bg)' }}>
+              <div className="filter-scroll" style={{ display: 'flex', background: 'var(--overlay-bg)', padding: '4px', borderRadius: '14px', border: '1px solid var(--overlay-bg)' }}>
                 {DIFFICULTIES.map(d => (
                   <button key={d.id} className={`filter-btn ${difficulty === d.id ? 'active' : ''}`} onClick={() => setDifficulty(d.id)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     {d.id !== 'all' && <Target size={16} color={d.color} />}
@@ -263,8 +263,8 @@ const Challenges = () => {
                     </div>
 
                     {/* Title + tags */}
-                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <div style={{ fontWeight: 700, fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', color: 'var(--text-primary)' }}>
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px', overflow: 'hidden' }}>
+                      <div style={{ fontWeight: 700, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: 'var(--text-primary)', wordBreak: 'break-word' }}>
                         <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>#{challenge.id}</span>
                         {tr(`challenge_${challenge.id}_title`, challenge.title)}
                         {challenge.user_status === 'accepted' && (
@@ -282,9 +282,9 @@ const Challenges = () => {
                       )}
                     </div>
 
-                    {/* Accept rate */}
+                    {/* Accept rate — hidden on small screens */}
                     {acceptRate !== null && (
-                      <div style={{ textAlign: 'right', minWidth: '80px', flexShrink: 0, background: 'var(--overlay-bg)', padding: '6px 12px', borderRadius: '10px', border: '1px solid var(--overlay-bg)' }}>
+                      <div className="hide-on-mobile" style={{ textAlign: 'right', minWidth: '80px', flexShrink: 0, background: 'var(--overlay-bg)', padding: '6px 12px', borderRadius: '10px', border: '1px solid var(--overlay-bg)' }}>
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.5px' }}>{tr('acceptRate', 'Принято')}</div>
                         <div style={{ fontWeight: 800, color: acceptRate > 50 ? 'var(--success, #34d399)' : 'var(--warning)', fontSize: '0.95rem' }}>{acceptRate}%</div>
                       </div>
