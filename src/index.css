@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
   /* ═══ VERCEL/LINEAR-STYLE LIGHT THEME ═══ */
@@ -180,8 +180,8 @@ body {
 }
 
 h1, h2, h3, h4, .heading {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  letter-spacing: -0.02em;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.03em;
 }
 
 code, pre, .font-mono {
