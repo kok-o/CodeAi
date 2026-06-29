@@ -60,6 +60,9 @@ const TerminalPanel = ({ activeProjectId, activeProjectFiles, theme }) => {
         fitAddon.fit();
         socket.emit('terminal.resize', { cols: term.cols, rows: term.rows });
       } catch (e) {}
+
+      // Focus the terminal so it captures keyboard input immediately
+      setTimeout(() => term.focus(), 100);
     });
 
     socket.on('connect_error', (err) => {
@@ -131,7 +134,10 @@ const TerminalPanel = ({ activeProjectId, activeProjectFiles, theme }) => {
   }, [isReady]);
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}>
+    <div
+      style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}
+      onClick={() => xtermRef.current?.focus()}
+    >
       <div ref={terminalRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
     </div>
   );
