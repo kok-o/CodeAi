@@ -6,11 +6,11 @@ import { useDragAndDrop } from './useDragAndDrop';
 import './TeacherStudio.css';
 
 const LANG_OPTIONS = [
-  { id: 'python',     label: 'Python',     icon: '🐍' },
-  { id: 'javascript', label: 'JavaScript', icon: '⚡' },
-  { id: 'csharp',     label: 'C#',         icon: '🔷' },
-  { id: 'java',       label: 'Java',       icon: '☕' },
-  { id: 'cpp',        label: 'C++',        icon: '⚙️' },
+  { id: 'python',     label: 'Python',     iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg' },
+  { id: 'javascript', label: 'JavaScript', iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg' },
+  { id: 'csharp',     label: 'C#',         iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg' },
+  { id: 'java',       label: 'Java',       iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg' },
+  { id: 'cpp',        label: 'C++',        iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg' },
 ];
 
 /* ═══════════════════════════════════════════════════════
@@ -35,7 +35,7 @@ export const LessonSettingsPanel = ({ lesson, onUpdate }) => {
           value={lesson.language || 'python'}
           onChange={e => onUpdate({ language: e.target.value })}
         >
-          {LANG_OPTIONS.map(l => <option key={l.id} value={l.id}>{l.icon} {l.label}</option>)}
+          {LANG_OPTIONS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}
         </select>
       </div>
 
@@ -62,13 +62,6 @@ export const LessonSettingsPanel = ({ lesson, onUpdate }) => {
         />
       </div>
 
-      <button
-        className="ts-btn"
-        style={{ width: '100%', justifyContent: 'center', gap: '8px', marginTop: '8px' }}
-        onClick={() => window.open('/lesson/' + lesson.id, '_blank')}
-      >
-        <Eye size={14} /> Предпросмотр
-      </button>
     </div>
   );
 };
@@ -137,7 +130,7 @@ const AddLessonForm = ({ courseId, onCreated, onCancel, showToast }) => {
             value={form.language}
             onChange={e => setForm(f => ({ ...f, language: e.target.value }))}
           >
-            {LANG_OPTIONS.map(l => <option key={l.id} value={l.id}>{l.icon} {l.label}</option>)}
+            {LANG_OPTIONS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}
           </select>
         </div>
       </div>

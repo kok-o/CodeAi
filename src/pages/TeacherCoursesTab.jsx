@@ -13,10 +13,11 @@ const S = {
 };
 
 const LANG_OPTIONS = [
-  { id: 'python',     label: 'Python',      icon: '🐍' },
-  { id: 'javascript', label: 'JavaScript',  icon: '⚡' },
-  { id: 'csharp',     label: 'C#',          icon: '🔷' },
-  { id: 'java',       label: 'Java',        icon: '☕' },
+  { id: 'python',     label: 'Python',     iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg' },
+  { id: 'javascript', label: 'JavaScript', iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg' },
+  { id: 'csharp',     label: 'C#',         iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/csharp/csharp-original.svg' },
+  { id: 'java',       label: 'Java',       iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg' },
+  { id: 'cpp',        label: 'C++',        iconUrl: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg' },
 ];
 
 export const TeacherCoursesTab = ({ courses, refreshCourses, showToast }) => {
@@ -328,7 +329,12 @@ export const TeacherCoursesTab = ({ courses, refreshCourses, showToast }) => {
                   {!isEditingLesson && <div><label style={S.label}>Уникальный ID (py-1)</label><input required className="ts-input" style={S.input} value={lessonFormData.id} onChange={e => setLessonFormData({...lessonFormData, id: e.target.value})} /></div>}
                   <div><label style={S.label}>Название</label><input required className="ts-input" style={S.input} value={lessonFormData.title} onChange={e => setLessonFormData({...lessonFormData, title: e.target.value})} /></div>
                   <div><label style={S.label}>Подзаголовок (Урок 1.1)</label><input required className="ts-input" style={S.input} value={lessonFormData.subtitle} onChange={e => setLessonFormData({...lessonFormData, subtitle: e.target.value})} /></div>
-                  <div><label style={S.label}>Язык</label><select className="ts-input" style={S.input} value={lessonFormData.language} onChange={e => setLessonFormData({...lessonFormData, language: e.target.value})}>{LANG_OPTIONS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}</select></div>
+                  <div>
+                <label style={S.label}>Язык</label>
+                <select className="ts-input" style={S.input} value={lessonFormData.language} onChange={e => setLessonFormData({...lessonFormData, language: e.target.value})}>
+                  {LANG_OPTIONS.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}
+                </select>
+              </div>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '18px' }}>
                   <button type="button" style={S.btn} onClick={() => setShowLessonForm(false)}>Отмена</button>
@@ -378,8 +384,8 @@ export const TeacherCoursesTab = ({ courses, refreshCourses, showToast }) => {
             <h2 style={{ fontSize: '1.7rem', fontWeight: 800 }}>{selectedLesson.subtitle} - {selectedLesson.title}</h2>
             <p style={{ color: 'var(--text-muted)', marginTop: '4px' }}>Конструктор блоков. Добавляйте теорию, тесты и практические задания.</p>
           </div>
-          <button style={S.btnPrimary} onClick={() => window.open('/lesson/' + selectedLesson.id, '_blank')}>
-            <ExternalLink size={16} /> Предпросмотр
+          <button style={{ ...S.btn, opacity: 0.8 }} onClick={() => window.open(`/lesson/${selectedLesson.id}`, '_blank')}>
+            <ExternalLink size={16} /> Открыть
           </button>
         </div>
 

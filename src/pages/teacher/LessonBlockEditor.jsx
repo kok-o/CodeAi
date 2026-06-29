@@ -25,11 +25,11 @@ const BLOCK_META = {
 };
 
 const LANG_OPTIONS = [
-  { id: 'python',     label: 'Python 🐍' },
-  { id: 'javascript', label: 'JavaScript ⚡' },
-  { id: 'csharp',     label: 'C# 🔷' },
-  { id: 'java',       label: 'Java ☕' },
-  { id: 'cpp',        label: 'C++ ⚙️' },
+  { id: 'python',     label: 'Python' },
+  { id: 'javascript', label: 'JavaScript' },
+  { id: 'csharp',     label: 'C#' },
+  { id: 'java',       label: 'Java' },
+  { id: 'cpp',        label: 'C++' },
 ];
 
 /* ═══════════════════════════════════════════════════════

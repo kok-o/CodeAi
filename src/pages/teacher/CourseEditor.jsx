@@ -121,14 +121,7 @@ const CourseEditor = ({ course: initialCourse, onBack, showToast, refreshCourses
 
         {/* Right actions */}
         <div className="ts-editor__topbar-actions">
-          {selectedLesson && (
-            <button
-              className="ts-btn ts-btn--sm"
-              onClick={() => window.open('/lesson/' + selectedLesson.id, '_blank')}
-            >
-              <Eye size={14} /> Предпросмотр
-            </button>
-          )}
+
 
           <button
             className="ts-btn ts-btn--sm"

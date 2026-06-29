@@ -194,6 +194,11 @@
   border-color: var(--border-accent);
 }
 
+.ts-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
 /* ═══ SHARED BUTTONS ═══ */
 .ts-btn {
   background: var(--overlay-bg);

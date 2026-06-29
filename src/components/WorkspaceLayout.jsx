@@ -971,7 +971,7 @@ const WorkspaceLayout = () => {
       {/* Status Bar */}
       <div style={{ height: '28px', background: colors.statusBarBg, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px', fontSize: '12px', color: colors.statusBarFg, zIndex: 100, fontWeight: 500, flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 700, color: 'white' }} onClick={() => navigate('/')}><Code2 size={14} /> CodeAI</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 700, color: 'inherit' }} onClick={() => navigate('/')}><Code2 size={14} /> CodeAI</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }} onClick={() => setShowSecondarySideBar(!showSecondarySideBar)} title={showSecondarySideBar ? t('hideAi') || 'Hide AI' : t('showAi') || 'Show AI'}><img src="/logo.png" alt="Logo" style={{ width: '18px', height: '18px', objectFit: 'contain' }} /> {showSecondarySideBar ? t('hideAi') || 'Hide AI' : t('showAi') || 'Show AI'}</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
