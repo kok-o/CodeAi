@@ -148,23 +148,30 @@ const IDE = () => {
     setActivePanelTab('terminal');
     setShowPanel(true);
 
-    // Save current file state to backend right before running
     if (window.__terminalSocket) {
+      // Sync latest file state to disk before running
       window.__terminalSocket.emit('sync_files', { projectId: activeProjectId, files: activeProjectFiles });
-      
+
       const filename = activeTab.name || activeTab.title;
       let cmd = '';
-      if (filename.endsWith('.py')) cmd = `python "${filename}"\r\n`;
-      else if (filename.endsWith('.js')) cmd = `node "${filename}"\r\n`;
-      else cmd = `echo "Cannot automatically run ${filename}."\r\n`;
-      
-      // Ctrl+C to stop any running process
+      if (filename.endsWith('.py'))  cmd = `python3 -u "${filename}"\r`;
+      else if (filename.endsWith('.js'))  cmd = `node "${filename}"\r`;
+      else if (filename.endsWith('.ts'))  cmd = `npx ts-node "${filename}"\r`;
+      else if (filename.endsWith('.sh'))  cmd = `bash "${filename}"\r`;
+      else { cmd = `echo "Cannot automatically run ${filename}."\r`; }
+
+      // Step 1: send Ctrl+C to interrupt any running process
       window.__terminalSocket.emit('terminal.toTerm', '\x03');
-      
-      // Wait for PowerShell to show new prompt, clear any ghost characters with Escape, then run
+
+      // Step 2: wait for new prompt, then send Enter to clear any partial input
       setTimeout(() => {
-        window.__terminalSocket.emit('terminal.toTerm', '\x1b' + cmd);
-      }, 500);
+        window.__terminalSocket.emit('terminal.toTerm', '\r');
+      }, 300);
+
+      // Step 3: send the run command
+      setTimeout(() => {
+        window.__terminalSocket.emit('terminal.toTerm', cmd);
+      }, 600);
     }
   };
 
