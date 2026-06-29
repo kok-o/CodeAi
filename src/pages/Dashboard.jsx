@@ -93,28 +93,35 @@ const Dashboard = () => {
         .db-card { 
           background: var(--bg-card); 
           border: 1px solid var(--border-subtle); 
-          border-radius: 16px; 
-          box-shadow: var(--card-shadow);
+          border-radius: var(--radius-lg); 
+          box-shadow: var(--shadow-sm);
         }
         .db-card-glow:hover { 
           border-color: var(--border-accent); 
-          box-shadow: var(--dropdown-shadow); 
+          box-shadow: var(--shadow-md); 
           transform: translateY(-2px); 
         }
         .db-stat { font-size: 2.2rem; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
         .db-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+        
+        .dashboard-main { padding: 40px 48px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 32px; }
+        
+        @media (max-width: 767px) {
+          .dashboard-main { padding: 20px 16px; }
+        }
       `}</style>
 
-      <main className="animate-in" style={{ flex: 1, padding: '40px 48px', overflowY: 'auto' }}>
+      <main className="animate-in dashboard-main" style={{ flex: 1, overflowY: 'auto' }}>
 
         {/* ════ HERO HEADER ════ */}
         <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }}
           style={{ 
-            marginBottom: '36px', padding: '40px 48px', borderRadius: '16px', 
+            marginBottom: '36px', padding: '32px', borderRadius: 'var(--radius-lg)', 
             background: 'var(--bg-card)', 
             border: '1px solid var(--border-subtle)', 
             display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '24px', 
-            boxShadow: 'var(--card-shadow)',
+            boxShadow: 'var(--shadow-sm)',
             position: 'relative', overflow: 'hidden'
           }}>
           <div style={{ position: 'absolute', top: '-50%', right: '-10%', width: '400px', height: '400px', background: 'var(--brand-primary)', filter: 'blur(150px)', opacity: 0.08, borderRadius: '50%', pointerEvents: 'none' }} />
@@ -130,7 +137,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* ════ STAT CARDS ROW ════ */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '32px' }}>
+        <div className="stats-grid">
           {[
             { icon: <TrendingUp size={22} />, label: t('coursesCompleted') || 'Пройдено курсов', value: completedCoursesCount, sub: '', color: 'var(--brand-primary)' },
             { icon: <Terminal size={22} />,  label: t('challengesSolved') || 'Задач решено',    value: challengeStats?.challengesSolved || 0, sub: t('successfulAttempts') || 'успешно', color: 'var(--success)' },
@@ -216,7 +223,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* ════ QUICK ACTIONS ════ */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '24px' }}>
+        <div className="stats-grid" style={{ marginTop: '24px' }}>
           {[
             { icon: <Terminal size={24} />, label: tr('challenges', 'Задачник'), desc: tr('challengesDesc', 'Тренируй алгоритмы'), link: '/challenges', color: 'var(--brand-primary)' },
             { icon: <Code2 size={24} />,    label: tr('ide', 'IDE'),       desc: tr('ideDesc', 'Пиши код свободно'),  link: '/ide',        color: 'var(--brand-secondary)' },

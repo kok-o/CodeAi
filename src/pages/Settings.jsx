@@ -759,7 +759,9 @@ const prefRowStyle = {
   justifyContent: 'space-between',
   alignItems: 'center',
   borderBottom: '1px solid var(--border-subtle)',
-  paddingBottom: '20px'
+  paddingBottom: '20px',
+  flexWrap: 'wrap',
+  gap: '16px'
 };
 
 const infoRowStyle = {
@@ -769,7 +771,9 @@ const infoRowStyle = {
   background: 'var(--surface-sunken)',
   border: '1px solid var(--border-subtle)',
   padding: '16px 20px',
-  borderRadius: '12px'
+  borderRadius: '12px',
+  flexWrap: 'wrap',
+  gap: '16px'
 };
 
 const toastSuccessStyle = {

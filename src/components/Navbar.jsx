@@ -96,9 +96,7 @@ const Navbar = () => {
   const isAlreadyOnMain = location.pathname === mainPath;
 
   return (
-    <nav className="glass" style={{
-      margin: '20px 40px',
-      padding: '16px 32px',
+    <nav className="glass navbar-main" style={{
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -108,6 +106,21 @@ const Navbar = () => {
       right: 0,
       zIndex: 1000,
     }}>
+      <style>{`
+        .navbar-main {
+          margin: 20px 40px;
+          padding: 16px 32px;
+        }
+        @media (max-width: 767px) {
+          .navbar-main {
+            margin: 10px;
+            padding: 10px 16px;
+          }
+          .nav-links {
+            display: none !important;
+          }
+        }
+      `}</style>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <NavLink 
           to={mainPath} 
@@ -140,7 +153,7 @@ const Navbar = () => {
         </NavLink>
       </div>
 
-      <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+      <div className="nav-links" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
         <a 
           href="https://youtu.be/Q_nLB-VYixs?si=3HMTGzG52Q-7ALV3" 
           target="_blank" 

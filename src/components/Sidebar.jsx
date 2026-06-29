@@ -15,7 +15,8 @@ import {
   Terminal,
   GraduationCap,
   Map,
-  FolderOpen
+  FolderOpen,
+  Home
 } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 
@@ -30,33 +31,41 @@ const Sidebar = () => {
   const [localSettingsOpen, setLocalSettingsOpen] = useState(false);
   const settingsExpanded = isSettingsPage || localSettingsOpen;
 
-  const getInitials = (name) => {
-    if (!name) return "?";
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-  };
-
-
-  const getBaseUrl = () => {
-    const url = import.meta.env.PROD ? '' : 'http://localhost:5000';
-    return url.replace(/\/api$/, '');
-  };
-  const apiBase = getBaseUrl();
-  const avatarUrl = user?.avatar_url ? (user.avatar_url.startsWith('http') ? user.avatar_url : `${apiBase}${user.avatar_url}`) : null;
-
   const handleLogoClick = () => {
     navigate('/');
   };
+
+  const navItems = [
+    {
+      icon: user?.role === 'teacher' ? <GraduationCap size={20} /> : <Home size={20} />,
+      label: user?.role === 'teacher' ? "Teacher Studio" : t('dashboard'),
+      to: user?.role === 'teacher' ? '/teacher/courses' : '/dashboard'
+    },
+    { icon: <BookOpen size={20} />, label: t('courses'), to: '/courses' },
+    { icon: <Map size={20} />, label: 'Пути', to: '/paths', mobileLabel: 'Пути' },
+    { icon: <Code2 size={20} />, label: t('ide') || "IDE", to: '/ide' },
+    { icon: <Terminal size={20} />, label: t('challenges') || "Задачи", to: '/challenges', mobileLabel: 'Задачи' },
+    { icon: <FolderOpen size={20} />, label: 'Проекты', to: '/projects', mobileLabel: 'Проекты' },
+    { icon: <UserCircle size={20} />, label: t('profile'), to: '/profile' }
+  ];
 
   return (
     <>
       <style>{`
         main {
-          padding-left: ${isCollapsed ? '120px' : '280px'} !important;
+          padding-left: ${isCollapsed ? '100px' : '260px'} !important;
           transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        @media (max-width: 767px) {
+          main {
+            padding-left: 0 !important;
+            padding-bottom: 72px !important;
+          }
         }
       `}</style>
 
-      <div className="glass" style={{
+      {/* DESKTOP SIDEBAR */}
+      <div className="glass desktop-only" style={{
         width: isCollapsed ? '80px' : '240px',
         height: 'calc(100vh - 40px)',
         position: 'fixed',
@@ -68,47 +77,36 @@ const Sidebar = () => {
         zIndex: 100,
         transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
-        {/* Collapse Toggle Button */}
         <button 
           onClick={toggleSidebar}
           style={{
             position: 'absolute',
-            right: '-6px',
+            right: '-12px',
             top: '32px',
-            width: '6px',
-            height: '52px',
-            borderRadius: '0 18px 18px 0',
-            background: 'transparent',
-            border: 'none',
+            width: '24px',
+            height: '24px',
+            borderRadius: '50%',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-subtle)',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            color: 'transparent',
+            color: 'var(--text-muted)',
             cursor: 'pointer',
             zIndex: 110,
-            boxShadow: 'none',
+            boxShadow: 'var(--shadow-sm)',
             transition: 'all 0.2s ease-in-out'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.width = '24px';
-            e.currentTarget.style.right = '-24px';
-            e.currentTarget.style.background = 'var(--bg-tertiary)';
-            e.currentTarget.style.border = '1px solid var(--border-color)';
-            e.currentTarget.style.borderLeft = '2px solid var(--primary)';
-            e.currentTarget.style.color = 'var(--text-main)';
-            e.currentTarget.style.boxShadow = 'var(--glass-shadow)';
+            e.currentTarget.style.color = 'var(--brand-primary)';
+            e.currentTarget.style.borderColor = 'var(--brand-primary)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.width = '6px';
-            e.currentTarget.style.right = '-6px';
-            e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.border = 'none';
-            e.currentTarget.style.borderLeft = 'none';
-            e.currentTarget.style.color = 'transparent';
-            e.currentTarget.style.boxShadow = 'none';
+            e.currentTarget.style.color = 'var(--text-muted)';
+            e.currentTarget.style.borderColor = 'var(--border-subtle)';
           }}
         >
-          {isCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
         </button>
 
         <div 
@@ -127,37 +125,23 @@ const Sidebar = () => {
             src="/logo.png" 
             alt="CodeAI Logo" 
             style={{
-              width: '40px',
-              height: '40px',
+              width: '36px',
+              height: '36px',
               objectFit: 'contain',
               flexShrink: 0
             }} 
           />
           {!isCollapsed && (
-            <span className="heading" style={{ fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
-              Code<span style={{ color: 'var(--primary)' }}>AI</span>
+            <span className="heading" style={{ fontSize: '1.25rem', fontWeight: '700', letterSpacing: '-0.02em' }}>
+              Code<span style={{ color: 'var(--brand-primary)' }}>AI</span>
             </span>
           )}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflowY: 'auto' }}>
-          {user?.role === 'teacher' ? (
-            <NavItem icon={<GraduationCap size={20} />} label="Teacher Studio" to="/teacher/courses" isCollapsed={isCollapsed} />
-          ) : (
-            <NavItem icon={<BarChart3 size={20} />} label={t('dashboard')} to="/dashboard" isCollapsed={isCollapsed} />
-          )}
-
-          <NavItem icon={<BookOpen size={20} />} label={t('courses')} to="/courses" isCollapsed={isCollapsed} />
-
-          <NavItem icon={<Map size={20} />} label="Пути обучения" to="/paths" isCollapsed={isCollapsed} />
-
-          <NavItem icon={<Code2 size={20} />} label={t('ide') || "IDE"} to="/ide" isCollapsed={isCollapsed} />
-
-          <NavItem icon={<Terminal size={20} />} label={t('challenges') || "Задачник"} to="/challenges" isCollapsed={isCollapsed} />
-
-          <NavItem icon={<FolderOpen size={20} />} label="Проекты" to="/projects" isCollapsed={isCollapsed} />
-
-          <NavItem icon={<UserCircle size={20} />} label={t('profile')} to="/profile" isCollapsed={isCollapsed} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, overflowY: 'auto' }} className="scrollbar-thin">
+          {navItems.map((item, idx) => (
+            <NavItem key={idx} icon={item.icon} label={item.label} to={item.to} isCollapsed={isCollapsed} />
+          ))}
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <NavItem 
@@ -182,19 +166,20 @@ const Sidebar = () => {
                 height: settingsExpanded ? 'auto' : 0,
                 opacity: settingsExpanded ? 1 : 0,
                 pointerEvents: settingsExpanded ? 'auto' : 'none',
-                marginTop: settingsExpanded ? 8 : 0,
-                marginBottom: settingsExpanded ? 8 : 0
+                marginTop: settingsExpanded ? 4 : 0,
+                marginBottom: settingsExpanded ? 4 : 0
               }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              transition={{ duration: 0.2 }}
               style={{ overflow: 'hidden' }}
             >
               {!isCollapsed && (
                 <div style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '4px',
-                  paddingLeft: '16px',
-                  marginLeft: '21px',
+                  gap: '2px',
+                  paddingLeft: '12px',
+                  marginLeft: '22px',
+                  borderLeft: '1px solid var(--border-subtle)'
                 }}>
                   <SubNavItem label={t('profileTab')} tab="profile" activeTab={activeTab} />
                   <SubNavItem label={t('preferencesTab')} tab="preferences" activeTab={activeTab} />
@@ -208,6 +193,28 @@ const Sidebar = () => {
             <NavItem icon={<ShieldAlert size={20} />} label={t('adminDashboard')} to="/admin" isCollapsed={isCollapsed} />
           )}
         </div>
+      </div>
+
+      {/* MOBILE BOTTOM TAB BAR */}
+      <div className="mobile-only glass" style={{
+        position: 'fixed',
+        bottom: '0',
+        left: '0',
+        right: '0',
+        height: '64px',
+        borderRadius: '24px 24px 0 0',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        padding: '0 8px',
+        zIndex: 1000,
+        borderBottom: 'none',
+        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.05)'
+      }}>
+        {/* We pick top 5 most important items for mobile bottom bar */}
+        {navItems.slice(0, 5).map((item, idx) => (
+          <MobileNavItem key={idx} icon={item.icon} label={item.mobileLabel || item.label} to={item.to} />
+        ))}
       </div>
     </>
   );
@@ -224,20 +231,22 @@ const NavItem = ({ icon, label, to, isCollapsed, onClick, isActive: customIsActi
         display: 'flex',
         alignItems: 'center',
         gap: isCollapsed ? '0' : '12px',
-        padding: '12px',
-        borderRadius: '12px',
+        padding: '10px 12px',
+        borderRadius: 'var(--radius-md)',
         textDecoration: 'none',
-        color: active ? 'var(--primary)' : 'var(--text-muted)',
-        background: active ? 'var(--gradient-glow1)' : 'transparent',
-        transition: 'all 0.2s ease',
-        justifyContent: isCollapsed ? 'center' : 'flex-start'
+        color: active ? 'var(--brand-primary)' : 'var(--text-muted)',
+        background: active ? 'var(--brand-glow)' : 'transparent',
+        transition: 'all 0.15s ease',
+        justifyContent: isCollapsed ? 'center' : 'flex-start',
+        fontWeight: active ? '600' : '500',
+        fontSize: '0.9rem'
       };
     }}
   >
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
       {icon}
     </div>
-    {!isCollapsed && <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>}
+    {!isCollapsed && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>}
   </NavLink>
 );
 
@@ -249,18 +258,18 @@ const SubNavItem = ({ label, tab, activeTab }) => {
       style={{
         display: 'flex',
         alignItems: 'center',
-        padding: '8px 12px',
-        borderRadius: '8px',
+        padding: '6px 12px',
+        borderRadius: 'var(--radius-sm)',
         textDecoration: 'none',
-        color: isActive ? 'var(--primary)' : 'var(--text-muted)',
-        background: isActive ? 'var(--gradient-glow1)' : 'transparent',
+        color: isActive ? 'var(--brand-primary)' : 'var(--text-muted)',
+        background: isActive ? 'var(--brand-glow)' : 'transparent',
         fontSize: '0.85rem',
         fontWeight: isActive ? '600' : '500',
-        transition: 'all 0.2s ease',
+        transition: 'all 0.15s ease',
         cursor: 'pointer'
       }}
       onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.color = 'var(--text-main)';
+        if (!isActive) e.currentTarget.style.color = 'var(--text-primary)';
       }}
       onMouseLeave={(e) => {
         if (!isActive) e.currentTarget.style.color = 'var(--text-muted)';
@@ -270,5 +279,28 @@ const SubNavItem = ({ label, tab, activeTab }) => {
     </NavLink>
   );
 };
+
+const MobileNavItem = ({ icon, label, to }) => (
+  <NavLink 
+    to={to} 
+    style={({ isActive }) => ({
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '4px',
+      padding: '4px 8px',
+      textDecoration: 'none',
+      color: isActive ? 'var(--brand-primary)' : 'var(--text-muted)',
+      transition: 'color 0.15s ease',
+      flex: 1
+    })}
+  >
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', transform: 'scale(1.1)' }}>
+      {icon}
+    </div>
+    <span style={{ fontSize: '10px', fontWeight: '600', textAlign: 'center' }}>{label}</span>
+  </NavLink>
+);
 
 export default Sidebar;

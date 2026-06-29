@@ -188,7 +188,7 @@ const AdminDashboard = () => {
           {/* USER MANAGEMENT PANEL */}
           {activeTab === 'users' && (
             <div className="glass-card" style={{ padding: '30px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-main)', margin: 0 }}>Registered Accounts</h3>
                 
                 {/* Search box */}

@@ -74,7 +74,7 @@ const Auth = ({ type = 'login' }) => {
       {/* Back to Home Mobile Only button would go here */}
       
       {/* Left Panel: Marketing (Hidden on Mobile) */}
-      <div style={{
+      <div className="desktop-only" style={{
         flex: 1,
         background: 'var(--bg-sidebar)',
         padding: '60px',
