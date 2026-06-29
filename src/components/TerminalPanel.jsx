@@ -4,8 +4,6 @@ import { FitAddon } from '@xterm/addon-fit';
 import { io } from 'socket.io-client';
 import '@xterm/xterm/css/xterm.css';
 
-const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
-
 const TerminalPanel = ({ activeProjectId, activeProjectFiles, theme }) => {
   const terminalRef = useRef(null);
   const socketRef = useRef(null);
@@ -25,61 +23,68 @@ const TerminalPanel = ({ activeProjectId, activeProjectFiles, theme }) => {
       theme: {
         background: theme === 'light' ? '#ffffff' : '#000000',
         foreground: theme === 'light' ? '#334155' : '#e2e8f0',
-        cursor: theme === 'light' ? '#334155' : '#e2e8f0',
+        cursor:     theme === 'light' ? '#334155' : '#e2e8f0',
         selectionBackground: theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)',
       }
     });
-    
+
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
-    
     term.open(terminalRef.current);
-    try {
-      fitAddon.fit();
-    } catch (e) {}
-    
+    try { fitAddon.fit(); } catch (e) {}
+
     xtermRef.current = term;
     fitAddonRef.current = fitAddon;
 
-    // Connect to Socket.IO
-    // In production, explicitly connect to '/' instead of an empty string
-    // to avoid resolving relative to the current route path (like /workspace/:id)
-    const socketUrl = import.meta.env.PROD ? '/' : 'http://localhost:5000';
-    const socket = io(socketUrl);
+    // --- Socket.IO connection ---
+    // In production use window.location.origin so the socket goes to the same
+    // host/port as the page (Render serves both frontend and backend from one service).
+    // Force WebSocket transport first to avoid polling issues behind proxies.
+    const socketUrl = import.meta.env.PROD
+      ? window.location.origin
+      : 'http://localhost:5000';
+
+    const socket = io(socketUrl, {
+      transports: ['websocket'],   // skip polling — avoids most proxy issues on Render
+      path: '/socket.io',
+    });
     socketRef.current = socket;
 
     socket.on('connect', () => {
       term.writeln('\x1b[32m[Connected to Interactive Terminal]\x1b[0m');
-      
-      // Sync files to the backend workspace
+      // Sync files once on initial connect to set up workspace + spawn PTY
       socket.emit('sync_files', { projectId: activeProjectId, files: activeProjectFiles });
       setIsReady(true);
-      
-      // Trigger initial resize sync
+
       try {
         fitAddon.fit();
         socket.emit('terminal.resize', { cols: term.cols, rows: term.rows });
       } catch (e) {}
     });
 
-    // Write incoming data from pty to xterm
+    socket.on('connect_error', (err) => {
+      term.writeln(`\x1b[31m[Connection error: ${err.message}]\x1b[0m`);
+    });
+
+    // Write incoming data from PTY to xterm
     socket.on('terminal.incData', (data) => {
       term.write(data);
     });
 
-    // Send keystrokes to pty
+    // Send keystrokes to PTY
     term.onData((data) => {
-      socket.emit('terminal.toTerm', data);
+      if (socket.connected) {
+        socket.emit('terminal.toTerm', data);
+      }
     });
 
-    // Handle Resize using ResizeObserver
+    // Resize handling
     const resizeObserver = new ResizeObserver(() => {
       try {
         fitAddon.fit();
         socket.emit('terminal.resize', { cols: term.cols, rows: term.rows });
       } catch (e) {}
     });
-    
     if (terminalRef.current) {
       resizeObserver.observe(terminalRef.current);
     }
@@ -96,14 +101,16 @@ const TerminalPanel = ({ activeProjectId, activeProjectFiles, theme }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeProjectId]);
 
-  // Sync files whenever they change (debounce to prevent spam)
+  // Sync files when they change — but only after the socket is ready
+  // Use a longer debounce so a single keystroke doesn't cause a re-sync
   useEffect(() => {
-    if (isReady && socketRef.current && activeProjectFiles) {
-      const timer = setTimeout(() => {
+    if (!isReady || !socketRef.current || !activeProjectFiles) return;
+    const timer = setTimeout(() => {
+      if (socketRef.current?.connected) {
         socketRef.current.emit('sync_files', { projectId: activeProjectId, files: activeProjectFiles });
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
+      }
+    }, 2000);
+    return () => clearTimeout(timer);
   }, [activeProjectFiles, activeProjectId, isReady]);
 
   // Update terminal theme dynamically
@@ -112,7 +119,7 @@ const TerminalPanel = ({ activeProjectId, activeProjectFiles, theme }) => {
       xtermRef.current.options.theme = {
         background: theme === 'light' ? '#ffffff' : '#000000',
         foreground: theme === 'light' ? '#334155' : '#e2e8f0',
-        cursor: theme === 'light' ? '#334155' : '#e2e8f0',
+        cursor:     theme === 'light' ? '#334155' : '#e2e8f0',
         selectionBackground: theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)',
       };
     }
