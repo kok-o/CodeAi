@@ -1,17 +1,87 @@
 import React, { useState, useContext } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
-import { 
-  Mail, 
-  Lock, 
-  User, 
-  CheckCircle, 
-  ArrowLeft,
-  Eye,
-  EyeOff
+import {
+  Mail, Lock, User, CheckCircle, ArrowLeft,
+  Eye, EyeOff, Sparkles, ArrowRight, Shield, Zap, Brain
 } from 'lucide-react';
+import { fadeInUp, scaleIn, staggerContainer, spring, easeOut } from '../utils/animations';
 
+// ─── Floating Input ───────────────────────────────────────────────────────────
+const FloatingInput = ({ label, type, placeholder, value, onChange, icon: Icon, required, rightSlot }) => {
+  const [focused, setFocused] = useState(false);
+
+  return (
+    <motion.div variants={fadeInUp} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <label style={{
+        fontSize: '0.8rem', fontWeight: 600,
+        color: focused ? 'var(--brand-primary)' : 'var(--text-secondary)',
+        letterSpacing: '-0.01em',
+        transition: 'color 200ms',
+      }}>
+        {label}
+      </label>
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        {Icon && (
+          <Icon
+            size={17}
+            style={{
+              position: 'absolute', left: '16px',
+              color: focused ? 'var(--brand-primary)' : 'var(--text-muted)',
+              transition: 'color 200ms', zIndex: 1, flexShrink: 0,
+            }}
+          />
+        )}
+        <input
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          required={required}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            width: '100%',
+            padding: Icon ? '13px 16px 13px 46px' : '13px 16px',
+            paddingRight: rightSlot ? '48px' : '16px',
+            background: 'var(--surface-sunken)',
+            border: `1px solid ${focused ? 'var(--brand-primary)' : 'var(--border-subtle)'}`,
+            borderRadius: '12px',
+            color: 'var(--text-primary)',
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '0.95rem',
+            outline: 'none',
+            boxShadow: focused
+              ? '0 0 0 3px var(--brand-glow-soft), 0 1px 3px oklch(0% 0 0 / 15%)'
+              : '0 1px 2px oklch(0% 0 0 / 8%)',
+            transition: 'border-color 200ms, box-shadow 200ms',
+          }}
+        />
+        {rightSlot && (
+          <div style={{ position: 'absolute', right: '14px', zIndex: 1 }}>
+            {rightSlot}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+// ─── Benefit Item ─────────────────────────────────────────────────────────────
+const BenefitItem = ({ icon: Icon, text, color }) => (
+  <motion.div
+    variants={fadeInUp}
+    style={{ display: 'flex', alignItems: 'center', gap: '14px' }}
+  >
+    <Icon size={20} color={color} style={{ flexShrink: 0 }} />
+    <span style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+      {text}
+    </span>
+  </motion.div>
+);
+
+// ─── Auth Page ────────────────────────────────────────────────────────────────
 const Auth = ({ type = 'login' }) => {
   const isLogin = type === 'login';
   const [name, setName] = useState('');
@@ -27,282 +97,342 @@ const Auth = ({ type = 'login' }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
-    if (!email || !password || (!isLogin && !name)) {
-      setError(t('fillAllFields'));
-      return;
-    }
-    
+    if (!email || !password || (!isLogin && !name)) { setError(t('fillAllFields')); return; }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError(t('validEmail'));
-      return;
-    }
-    
-    if (password.length < 6) {
-      setError(t('passwordLength'));
-      return;
-    }
-    
+    if (!emailRegex.test(email)) { setError(t('validEmail')); return; }
+    if (password.length < 6) { setError(t('passwordLength')); return; }
+
     setLoading(true);
     try {
       if (isLogin) {
         await login(email, password);
-        navigate('/dashboard');
       } else {
         await register(name, email, password);
-        navigate('/dashboard');
       }
+      navigate('/dashboard');
     } catch (err) {
-      let msg = err.message || "An authentication error occurred.";
-      if (msg.includes("Invalid credentials")) msg = t('invalidCredentials') || msg;
-      if (msg.includes("User not found")) msg = t('userNotFound') || msg;
-      if (msg.includes("Email is already in use")) msg = t('emailInUse') || msg;
-      if (msg.includes("Server error")) msg = t('serverError') || msg;
+      let msg = err.message || 'An authentication error occurred.';
+      if (msg.includes('Invalid credentials')) msg = t('invalidCredentials') || msg;
+      if (msg.includes('User not found'))      msg = t('userNotFound') || msg;
+      if (msg.includes('Email is already in use')) msg = t('emailInUse') || msg;
+      if (msg.includes('Server error'))        msg = t('serverError') || msg;
       setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
+  const benefits = [
+    { icon: CheckCircle, text: t('benefit1'), color: 'var(--brand-primary)' },
+    { icon: CheckCircle, text: t('benefit2'), color: 'var(--brand-primary)' },
+    { icon: CheckCircle, text: t('benefit3'), color: 'var(--brand-primary)' },
+  ];
+
   return (
-    <div style={{
-      display: 'flex',
-      minHeight: '100vh',
-      width: '100%'
-    }}>
-      {/* Back to Home Mobile Only button would go here */}
-      
-      {/* Left Panel: Marketing (Hidden on Mobile) */}
-      <div className="desktop-only" style={{
-        flex: 1,
-        background: 'var(--bg-sidebar)',
-        padding: '60px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
-        {/* Glow Effects */}
-        <div style={{
-          position: 'absolute',
-          top: '-10%',
-          right: '-10%',
-          width: '400px',
-          height: '400px',
-          background: 'var(--brand-primary)',
-          filter: 'blur(150px)',
-          opacity: 0.15,
-        }} />
+    <div style={{ display: 'flex', minHeight: '100vh', width: '100%', background: '#000000' }}>
 
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <NavLink to="/" style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '12px', 
-            textDecoration: 'none', 
-            color: 'var(--text-primary)',
-            marginBottom: '60px'
-          }}>
-             <img 
-               src="/logo.png" 
-               alt="CodeAI Logo" 
-               style={{
-                 width: '40px',
-                 height: '40px',
-                 objectFit: 'contain'
-               }} 
-             />
-             <span className="heading" style={{ fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
-               Code<span style={{ color: 'var(--brand-primary)' }}>AI</span>
-             </span>
-          </NavLink>
+      {/* ── Left Panel (Marketing) ─────────────────────────── */}
+      <div
+        className="desktop-only"
+        style={{
+          flex: 1,
+          background: 'transparent',
+          padding: '60px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Aurora blobs */}
+        <motion.div
+          animate={{ x: [0, 30, 0], y: [0, -30, 0], scale: [1, 1.1, 1] }}
+          transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute', top: '-15%', right: '-15%',
+            width: '450px', height: '450px',
+            background: 'oklch(58% 0.25 274 / 18%)',
+            borderRadius: '50%', filter: 'blur(90px)', pointerEvents: 'none',
+          }}
+        />
+        <motion.div
+          animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: -8 }}
+          style={{
+            position: 'absolute', bottom: '-10%', left: '-10%',
+            width: '350px', height: '350px',
+            background: 'oklch(61% 0.26 300 / 14%)',
+            borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none',
+          }}
+        />
 
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '24px', lineHeight: 1.2, color: 'var(--text-primary)' }}>
-              {t('authTitleMain')} <br/> <span style={{ color: 'var(--brand-primary)' }}>{t('authTitleSub')}</span>
-            </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginBottom: '40px', maxWidth: '450px' }}>
-              {t('authSubtitle')}
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <BenefitItem text={t('benefit1')} />
-                <BenefitItem text={t('benefit2')} />
-                <BenefitItem text={t('benefit3')} />
-            </div>
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          style={{ position: 'relative', zIndex: 1 }}
+        >
+          {/* Logo */}
+          <motion.div variants={fadeInUp} style={{ marginBottom: '64px' }}>
+            <NavLink to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', color: 'var(--text-primary)' }}>
+              <img src="/logo.png" alt="CodeAI Logo" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+              <span style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.04em' }}>
+                Code<span style={{ color: 'var(--brand-primary)' }}>AI</span>
+              </span>
+            </NavLink>
           </motion.div>
-        </div>
+
+
+          <motion.h1
+            variants={fadeInUp}
+            style={{
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontWeight: 800, letterSpacing: '-0.04em',
+              lineHeight: 1.1, marginBottom: '20px',
+            }}
+          >
+            {t('authTitleMain')}{' '}
+            <span style={{
+              background: 'linear-gradient(135deg, var(--brand-400), var(--violet-500))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
+              {t('authTitleSub')}
+            </span>
+          </motion.h1>
+
+          <motion.p
+            variants={fadeInUp}
+            style={{
+              color: 'var(--text-muted)', fontSize: '1rem',
+              marginBottom: '48px', lineHeight: 1.7, maxWidth: '440px',
+            }}
+          >
+            {t('authSubtitle')}
+          </motion.p>
+
+          {/* Benefits */}
+          <motion.div variants={staggerContainer} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {benefits.map((b, i) => <BenefitItem key={i} {...b} />)}
+          </motion.div>
+        </motion.div>
       </div>
 
+      {/* ── Right Panel (Form) ─────────────────────────────── */}
       <div style={{
         flex: 1,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '40px',
-        background: 'transparent'
+        padding: '40px 24px',
+        background: 'transparent',
+        position: 'relative',
+        overflow: 'hidden',
       }}>
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="glass-card" 
-          style={{ width: '100%', maxWidth: '450px', padding: '48px' }}
+        {/* Mobile blobs */}
+        <div className="mobile-only" style={{
+          position: 'absolute', top: '-10%', right: '-10%',
+          width: '300px', height: '300px',
+          background: 'oklch(58% 0.25 274 / 15%)',
+          borderRadius: '50%', filter: 'blur(70px)',
+          pointerEvents: 'none', zIndex: 0,
+        }} />
+
+        <motion.div
+          variants={scaleIn}
+          initial="hidden"
+          animate="visible"
+          style={{
+            width: '100%',
+            maxWidth: '400px',
+            background: '#09090b',
+            border: '1px solid #1f1f22',
+            borderRadius: '28px',
+            padding: '52px 48px',
+            boxShadow: 'var(--glass-shadow), 0 0 0 1px var(--glass-border)',
+            position: 'relative',
+            zIndex: 1,
+          }}
         >
-          <div style={{ marginBottom: '32px' }}>
-            <h2 style={{ fontSize: '2rem', marginBottom: '8px', color: 'var(--text-main)' }}>
-              {isLogin ? t('welcomeBack') : t('getStarted')}
-            </h2>
-            <p style={{ color: 'var(--text-muted)' }}>
-              {isLogin ? t('welcomeBack') : t('getStarted')}
-            </p>
-          </div>
+          {/* Back link (mobile) */}
+          <NavLink to="/" style={{
+            display: 'none',
+            alignItems: 'center', gap: '6px',
+            fontSize: '0.8rem', color: 'var(--text-muted)',
+            marginBottom: '28px',
+          }}
+            className="mobile-only"
+          >
+            <ArrowLeft size={14} />
+            {t('backToHome') || 'Back to home'}
+          </NavLink>
 
-          {error && (
-            <div style={{
-              padding: '12px 16px',
-              background: 'rgba(234, 67, 53, 0.08)',
-              border: '1px solid rgba(234, 67, 53, 0.2)',
-              borderRadius: '8px',
-              color: 'var(--danger)',
-              fontSize: '0.85rem',
-              marginBottom: '20px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span>⚠️</span> <span>{error}</span>
-            </div>
-          )}
+          {/* Form header */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div variants={fadeInUp} style={{ marginBottom: '32px' }}>
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {!isLogin && (
-              <>
-                <div className="input-group">
-                    <label style={labelStyle}>{t('fullName')}</label>
-                    <div style={inputContainerStyle}>
-                        <User size={18} style={iconStyle} />
-                        <input 
-                          type="text" 
-                          placeholder="John Doe" 
-                          style={inputStyle} 
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          required
-                        />
-                    </div>
-                </div>
-              </>
-            )}
-            <div className="input-group">
-                <label style={labelStyle}>{t('emailAddress')}</label>
-                <div style={inputContainerStyle}>
-                    <Mail size={18} style={iconStyle} />
-                    <input 
-                      type="email" 
-                      placeholder="name@company.com" 
-                      style={inputStyle} 
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                </div>
-            </div>
-            <div className="input-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <label style={labelStyle}>{t('password')}</label>
-                </div>
-                <div style={inputContainerStyle}>
-                    <Lock size={18} style={iconStyle} />
-                    <input 
-                      type={showPassword ? "text" : "password"} 
-                      placeholder="••••••••" 
-                      style={{...inputStyle, paddingRight: '48px'}} 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <div 
-                      style={{ position: 'absolute', right: '16px', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex' }}
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </div>
-                </div>
-            </div>
+              <h2 style={{
+                fontSize: '1.6rem', fontWeight: 800,
+                letterSpacing: '-0.04em', marginBottom: '6px',
+              }}>
+                {isLogin ? t('welcomeBack') : t('getStarted')}
+              </h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                {isLogin
+                  ? (t('loginSubtitle') || 'Sign in to continue your learning journey.')
+                  : (t('registerSubtitle') || 'Create your account in seconds.')
+                }
+              </p>
+            </motion.div>
 
-            <button 
-              type="submit" 
-              className="btn btn-primary" 
-              style={{ width: '100%', padding: '14px', justifyContent: 'center' }}
-              disabled={loading}
+            {/* Error */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                  transition={{ duration: 0.25 }}
+                  style={{
+                    padding: '12px 16px',
+                    background: 'oklch(63% 0.24 25 / 10%)',
+                    border: '1px solid oklch(63% 0.24 25 / 25%)',
+                    borderRadius: '12px',
+                    color: 'var(--danger)',
+                    fontSize: '0.85rem',
+                    marginBottom: '20px',
+                    display: 'flex', alignItems: 'center', gap: '10px',
+                  }}
+                >
+                  <span>⚠️</span>
+                  <span>{error}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              {!isLogin && (
+                <FloatingInput
+                  label={t('fullName')}
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  icon={User}
+                  required
+                />
+              )}
+
+              <FloatingInput
+                label={t('emailAddress')}
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                icon={Mail}
+                required
+              />
+
+              <FloatingInput
+                label={t('password')}
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                icon={Lock}
+                required
+                rightSlot={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(v => !v)}
+                    style={{
+                      background: 'transparent', border: 'none',
+                      color: 'var(--text-muted)', cursor: 'pointer',
+                      display: 'flex', padding: '4px',
+                    }}
+                  >
+                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                }
+              />
+
+              {/* Submit */}
+              <motion.div variants={fadeInUp} style={{ marginTop: '6px' }}>
+                <motion.button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading}
+                  whileHover={{ scale: 1.025, y: -1 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={spring}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                    borderRadius: '12px',
+                    justifyContent: 'center',
+                    gap: '10px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {loading ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        style={{
+                          width: '18px', height: '18px',
+                          border: '2px solid oklch(97% 0 0 / 30%)',
+                          borderTopColor: 'white',
+                          borderRadius: '50%',
+                        }}
+                      />
+                      {t('processing')}
+                    </>
+                  ) : (
+                    <>
+                      {isLogin ? t('signIn') : t('createAccount')}
+                    </>
+                  )}
+                </motion.button>
+              </motion.div>
+            </form>
+
+            {/* Switch auth mode */}
+            <motion.p
+              variants={fadeInUp}
+              style={{
+                marginTop: '28px', textAlign: 'center',
+                color: 'var(--text-muted)', fontSize: '0.875rem',
+              }}
             >
-              {loading ? t('processing') : (isLogin ? t('signIn') : t('createAccount'))}
-            </button>
-          </form>
-
-          <p style={{ marginTop: '32px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            {isLogin ? t('dontHaveAccount') : t('alreadyHaveAccount')} {' '}
-            <NavLink to={isLogin ? "/register" : "/login"} style={linkStyle}>
-                 {isLogin ? t('signUp') : t('logIn')}
-            </NavLink>
-          </p>
+              {isLogin ? t('dontHaveAccount') : t('alreadyHaveAccount')}{' '}
+              <NavLink
+                to={isLogin ? '/register' : '/login'}
+                style={{
+                  color: 'var(--brand-primary)',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  transition: 'color 150ms',
+                }}
+              >
+                {isLogin ? t('signUp') : t('logIn')}
+              </NavLink>
+            </motion.p>
+          </motion.div>
         </motion.div>
       </div>
     </div>
   );
-};
-
-const BenefitItem = ({ text }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <CheckCircle size={20} color="var(--accent)" />
-        <span style={{ fontSize: '1rem', color: 'var(--text-main)', opacity: 0.9 }}>{text}</span>
-    </div>
-);
-
-const labelStyle = {
-    display: 'block',
-    fontSize: '0.85rem',
-    fontWeight: '600',
-    marginBottom: '8px',
-    color: 'var(--text-main)'
-};
-
-const inputContainerStyle = {
-    position: 'relative',
-    display: 'flex',
-    alignItems: 'center'
-};
-
-const iconStyle = {
-    position: 'absolute',
-    left: '16px',
-    color: 'var(--text-muted)'
-};
-
-const inputStyle = {
-    width: '100%',
-    padding: '12px 16px 12px 48px',
-    background: 'var(--surface-sunken)',
-    border: '1px solid var(--border-subtle)',
-    borderRadius: '10px',
-    color: 'var(--text-main)',
-    fontSize: '1rem',
-    outline: 'none',
-    transition: 'var(--transition)'
-};
-
-const linkStyle = {
-    color: 'var(--primary)',
-    textDecoration: 'none',
-    fontWeight: '600',
-    fontSize: '0.85rem'
 };
 
 export default Auth;

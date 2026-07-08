@@ -14,7 +14,8 @@ import {
   Mail,
   Shield,
   LogOut,
-  Lock
+  Lock,
+  ChevronDown
 } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
 import ImageCropperModal from '../components/ImageCropperModal';
@@ -47,6 +48,7 @@ const Settings = () => {
   
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
   const [showCoverMenu, setShowCoverMenu] = useState(false);
+  const [showLangMenu, setShowLangMenu] = useState(false);
   
   // Feedback states
   const [successMsg, setSuccessMsg] = useState("");
@@ -262,7 +264,7 @@ const Settings = () => {
           flex-direction: row;
         }
         .settings-side-nav {
-          width: 220px;
+          width: 240px;
           display: flex;
           flex-direction: column;
           gap: 8px;
@@ -323,7 +325,8 @@ const Settings = () => {
                   cursor: 'pointer',
                   fontSize: '0.9rem',
                   transition: 'all 0.2s',
-                  width: '100%'
+                  width: '100%',
+                  whiteSpace: 'nowrap'
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive) {
@@ -578,15 +581,81 @@ const Settings = () => {
                       <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '4px', color: 'var(--text-primary)' }}>{t('interfaceLanguage') || "Язык интерфейса"}</h4>
                       <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{t('languageDesc') || "Измените язык интерфейса по умолчанию"}</p>
                     </div>
-                    <select 
-                      value={language} 
-                      onChange={(e) => setLanguage(e.target.value)} 
-                      style={selectStyle}
+                    <div 
+                      style={{ position: 'relative' }} 
+                      onMouseLeave={() => setShowLangMenu(false)}
                     >
-                      <option value="ru">Русский (RU)</option>
-                      <option value="kz">Қазақша (KZ)</option>
-                      <option value="en">English (EN)</option>
-                    </select>
+                      <button 
+                        onClick={() => setShowLangMenu(!showLangMenu)}
+                        style={{
+                          ...selectStyle, 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'space-between',
+                          gap: '8px',
+                          cursor: 'pointer',
+                          minWidth: '150px'
+                        }}
+                      >
+                        {language === 'ru' ? 'Русский (RU)' : language === 'kz' ? 'Қазақша (KZ)' : 'English (EN)'}
+                        <ChevronDown size={16} style={{ transform: showLangMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {showLangMenu && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -5 }}
+                            transition={{ duration: 0.15 }}
+                            className="glass"
+                            style={{
+                              position: 'absolute',
+                              top: 'calc(100% + 4px)',
+                              right: 0,
+                              width: '100%',
+                              minWidth: '150px',
+                              zIndex: 100,
+                              display: 'flex',
+                              flexDirection: 'column',
+                              padding: '4px'
+                            }}
+                          >
+                            {[
+                              { code: 'ru', label: 'Русский (RU)' },
+                              { code: 'kz', label: 'Қазақша (KZ)' },
+                              { code: 'en', label: 'English (EN)' }
+                            ].map(lang => (
+                              <button
+                                key={lang.code}
+                                onClick={() => {
+                                  setLanguage(lang.code);
+                                  setShowLangMenu(false);
+                                }}
+                                style={{
+                                  background: language === lang.code ? 'var(--overlay-bg-hover)' : 'transparent',
+                                  border: 'none',
+                                  padding: '8px 12px',
+                                  textAlign: 'left',
+                                  color: 'var(--text-primary)',
+                                  borderRadius: '6px',
+                                  cursor: 'pointer',
+                                  fontSize: '0.9rem'
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (language !== lang.code) e.currentTarget.style.background = 'var(--overlay-bg)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (language !== lang.code) e.currentTarget.style.background = 'transparent';
+                                }}
+                              >
+                                {lang.label}
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </div>
               </div>

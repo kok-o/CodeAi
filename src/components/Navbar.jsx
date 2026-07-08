@@ -1,15 +1,15 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  GitBranch, 
-  LayoutDashboard, 
-  Bell, 
-  Award, 
-  CheckCircle, 
-  Zap, 
-  AlertTriangle, 
-  Trash2, 
-  X,
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  GitBranch,
+  LayoutDashboard,
+  Bell,
+  Award,
+  CheckCircle,
+  Zap,
+  AlertTriangle,
+  Trash2,
   Menu,
   Settings as SettingsIcon,
   ShieldAlert,
@@ -17,51 +17,231 @@ import {
   Moon,
   LogIn,
   UserPlus,
-  Home,
   BookOpen,
   Terminal,
-  User
+  User,
+  Globe,
+  ChevronDown,
 } from 'lucide-react';
 import { AppContext } from '../context/AppContext';
+import { spring } from '../utils/animations';
 
+// ─── Language Switcher ────────────────────────────────────────────────────────
+const LanguageSwitcher = ({ language, setLanguage }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setIsOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const languages = [
+    { code: 'ru', label: 'Русский', short: 'RU' },
+    { code: 'kz', label: 'Қазақша', short: 'KZ' },
+    { code: 'en', label: 'English', short: 'EN' },
+  ];
+  const currentLang = languages.find(l => l.code === language) || languages[0];
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative' }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          background: isOpen ? 'var(--overlay-bg-hover)' : isHovered ? 'var(--overlay-bg)' : 'transparent',
+          border: `1px solid ${isOpen ? 'var(--border-accent)' : 'transparent'}`,
+          borderRadius: '10px',
+          color: 'var(--text-primary)',
+          padding: (isHovered || isOpen) ? '7px 12px' : '7px 10px',
+          cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: '0px',
+          fontSize: '0.82rem', fontWeight: 600,
+          transition: 'all 0.25s var(--ease-out)',
+          height: '36px',
+        }}
+      >
+        <Globe size={15} style={{ flexShrink: 0 }} />
+        <span style={{
+            display: 'inline-flex', alignItems: 'center',
+            overflow: 'hidden',
+            maxWidth: (isHovered || isOpen) ? '50px' : '0px',
+            opacity: (isHovered || isOpen) ? 1 : 0,
+            transition: 'all 0.25s var(--ease-out)',
+            whiteSpace: 'nowrap'
+        }}>
+          <span style={{ marginLeft: '6px' }}>{currentLang.short}</span>
+          <ChevronDown size={12} style={{
+            marginLeft: '4px',
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s',
+          }} />
+        </span>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.96 }}
+            transition={{ duration: 0.18 }}
+            style={{
+              position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+              background: 'var(--glass-bg)',
+              backdropFilter: 'blur(20px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+              border: '1px solid var(--glass-border)',
+              borderRadius: '12px',
+              boxShadow: 'var(--dropdown-shadow)',
+              padding: '6px',
+              display: 'flex', flexDirection: 'column', gap: '2px',
+              zIndex: 9999, minWidth: '130px',
+            }}
+          >
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => { setLanguage(lang.code); setIsOpen(false); }}
+                style={{
+                  background: language === lang.code
+                    ? 'linear-gradient(135deg, var(--brand-500), var(--brand-600))'
+                    : 'transparent',
+                  color: language === lang.code ? 'white' : 'var(--text-primary)',
+                  border: 'none', borderRadius: '8px',
+                  padding: '8px 14px', textAlign: 'left',
+                  cursor: 'pointer', fontSize: '0.85rem',
+                  fontWeight: language === lang.code ? 600 : 500,
+                  transition: 'background 0.15s',
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  fontFamily: 'Inter, sans-serif',
+                }}
+                onMouseEnter={(e) => { if (language !== lang.code) e.currentTarget.style.background = 'var(--overlay-bg)'; }}
+                onMouseLeave={(e) => { if (language !== lang.code) e.currentTarget.style.background = 'transparent'; }}
+              >
+                <span style={{ fontWeight: 700, opacity: 0.6, fontSize: '0.75rem', width: '22px' }}>{lang.short}</span>
+                {lang.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// ─── Desktop Nav Link ─────────────────────────────────────────────────────────
+const DesktopNavLink = ({ to, children, external, href }) => {
+  const [hovered, setHovered] = useState(false);
+
+  if (external) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          color: hovered ? 'var(--text-primary)' : 'var(--text-muted)',
+          textDecoration: 'none', fontWeight: 500,
+          fontSize: '0.9rem', transition: 'color 200ms',
+          position: 'relative',
+        }}
+      >
+        {children}
+        {hovered && (
+          <motion.div
+            layoutId="nav-underline"
+            style={{
+              position: 'absolute', bottom: '-2px', left: 0, right: 0,
+              height: '1px', background: 'var(--brand-primary)',
+              borderRadius: '9999px',
+            }}
+          />
+        )}
+      </a>
+    );
+  }
+
+  return (
+    <NavLink
+      to={to}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={({ isActive }) => ({
+        color: isActive ? 'var(--text-primary)' : hovered ? 'var(--text-primary)' : 'var(--text-muted)',
+        textDecoration: 'none', fontWeight: isActive ? 600 : 500,
+        fontSize: '0.9rem', transition: 'color 200ms',
+        position: 'relative',
+      })}
+    >
+      {({ isActive }) => (
+        <>
+          {children}
+          {(isActive || hovered) && (
+            <motion.div
+              layoutId="nav-underline"
+              style={{
+                position: 'absolute', bottom: '-2px', left: 0, right: 0,
+                height: '1.5px',
+                background: isActive
+                  ? 'linear-gradient(90deg, var(--brand-primary), var(--violet-400))'
+                  : 'var(--border-moderate)',
+                borderRadius: '9999px',
+              }}
+              initial={false}
+              transition={spring}
+            />
+          )}
+        </>
+      )}
+    </NavLink>
+  );
+};
+
+// ─── Navbar ───────────────────────────────────────────────────────────────────
 const Navbar = () => {
-  const { 
-    isAuthenticated, 
-    user, 
-    language, 
-    setLanguage, 
-    t,
-    notifications,
-    unreadNotificationsCount,
-    markNotificationAsRead,
-    markAllNotificationsAsRead,
-    deleteNotification,
-    theme,
-    setTheme
+  const {
+    isAuthenticated, user, language, setLanguage, t,
+    notifications, unreadNotificationsCount,
+    markNotificationAsRead, markAllNotificationsAsRead, deleteNotification,
+    theme, setTheme,
   } = useContext(AppContext);
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef(null);
   const bellRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const hamburgerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Close dropdowns when clicking outside
+  // Scroll detection for navbar blur intensity
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current && 
-        !dropdownRef.current.contains(event.target) &&
-        bellRef.current &&
-        !bellRef.current.contains(event.target)
-      ) {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Close dropdowns on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target) &&
+          bellRef.current && !bellRef.current.contains(e.target)) {
         setShowNotifications(false);
       }
       if (
-        mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(event.target)
+        mobileMenuRef.current && !mobileMenuRef.current.contains(e.target) &&
+        hamburgerRef.current && !hamburgerRef.current.contains(e.target)
       ) {
         setShowMobileMenu(false);
       }
@@ -70,35 +250,25 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setShowMobileMenu(false);
-  }, [location.pathname]);
+  useEffect(() => { setShowMobileMenu(false); }, [location.pathname]);
 
   const getInitials = (name) => {
-    if (!name) return "?";
+    if (!name) return '?';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
   };
 
   const getNotificationIcon = (type) => {
     switch (type) {
-      case 'success':
-        return <CheckCircle size={18} color="var(--success)" />;
-      case 'warning':
-        return <AlertTriangle size={18} color="var(--danger)" />;
-      default:
-        return <Zap size={18} color="var(--brand-primary)" />;
+      case 'success': return <CheckCircle size={17} color="var(--success)" />;
+      case 'warning': return <AlertTriangle size={17} color="var(--warning)" />;
+      default:        return <Zap size={17} color="var(--brand-primary)" />;
     }
   };
 
   const handleNotificationClick = async (n) => {
-    if (!n.is_read) {
-      await markNotificationAsRead(n.id);
-    }
+    if (!n.is_read) await markNotificationAsRead(n.id);
     setShowNotifications(false);
-    if (n.link) {
-      navigate(n.link);
-    }
+    if (n.link) navigate(n.link);
   };
 
   const getBaseUrl = () => {
@@ -106,7 +276,9 @@ const Navbar = () => {
     return url.replace(/\/api$/, '');
   };
   const apiBase = getBaseUrl();
-  const avatarUrl = user?.avatar_url ? (user.avatar_url.startsWith('http') ? user.avatar_url : `${apiBase}${user.avatar_url}`) : null;
+  const avatarUrl = user?.avatar_url
+    ? (user.avatar_url.startsWith('http') ? user.avatar_url : `${apiBase}${user.avatar_url}`)
+    : null;
 
   const getMainScreenPath = () => {
     if (!isAuthenticated) return '/';
@@ -118,532 +290,311 @@ const Navbar = () => {
   return (
     <>
       <style>{`
-        .navbar-main {
-          margin: 20px 40px;
-          padding: 16px 32px;
+        .navbar-glass {
+          margin: 16px 32px;
+          padding: 12px 28px;
         }
         @media (max-width: 767px) {
-          .navbar-main {
+          .navbar-glass {
             margin: 8px;
             padding: 10px 16px;
-            border-radius: 16px;
           }
-          .nav-links {
-            display: none !important;
-          }
+          .nav-links { display: none !important; }
+          .nav-right-desktop { display: none !important; }
         }
-        .mobile-hamburger {
-          display: none !important;
-        }
+        .mobile-hamburger { display: none !important; }
         @media (max-width: 767px) {
-          .mobile-hamburger {
-            display: flex !important;
-          }
+          .mobile-hamburger { display: flex !important; }
         }
-        .mobile-menu-overlay {
-          position: fixed;
-          inset: 0;
-          z-index: 999;
-          background: rgba(0,0,0,0.5);
-          backdrop-filter: blur(4px);
-          -webkit-backdrop-filter: blur(4px);
-        }
-        .mobile-menu-panel {
-          position: fixed;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          width: min(320px, 85vw);
-          background: var(--bg-card);
-          border-left: 1px solid var(--border-subtle);
-          z-index: 1001;
-          display: flex;
-          flex-direction: column;
-          padding: 24px 16px;
-          gap: 8px;
-          box-shadow: var(--shadow-lg);
-          overflow-y: auto;
+        .nav-link-active {
+          color: var(--text-primary) !important;
+          font-weight: 600 !important;
         }
         .mobile-menu-link {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          padding: 13px 16px;
-          border-radius: 12px;
-          color: var(--text-primary);
-          text-decoration: none;
-          font-weight: 500;
-          font-size: 1rem;
-          transition: background 0.15s ease;
+          display: flex; align-items: center; gap: 12px;
+          padding: 12px 16px; border-radius: 12px;
+          color: var(--text-primary); text-decoration: none;
+          font-weight: 500; font-size: 0.95rem;
+          transition: background 0.15s;
         }
-        .mobile-menu-link:hover,
-        .mobile-menu-link.active {
+        .mobile-menu-link:hover, .mobile-menu-link.active {
           background: var(--brand-glow);
           color: var(--brand-primary);
         }
-        .mobile-menu-divider {
-          height: 1px;
-          background: var(--border-subtle);
-          margin: 8px 0;
-        }
+        .mobile-menu-divider { height: 1px; background: var(--border-subtle); margin: 6px 0; }
       `}</style>
 
-      <nav className="glass navbar-main" style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-      }}>
+      {/* ── Main Navbar ─────────────────────────────────────────── */}
+      <motion.nav
+        className="navbar-glass"
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          position: 'fixed',
+          top: 0, left: 0, right: 0,
+          zIndex: 99999,
+          overflow: 'visible',
+          borderRadius: '20px',
+          background: scrolled
+            ? 'var(--glass-bg)'
+            : 'color-mix(in srgb, var(--stars-bg-color) 80%, transparent)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          border: scrolled
+            ? '1px solid var(--glass-border)'
+            : '1px solid color-mix(in srgb, var(--glass-border) 60%, transparent)',
+          boxShadow: scrolled
+            ? 'var(--card-shadow)'
+            : '0 2px 12px color-mix(in srgb, var(--brand-primary) 8%, transparent)',
+          transition: 'background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease',
+        }}
+      >
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <NavLink 
-            to={mainPath} 
-            onClick={(e) => {
-              if (isAlreadyOnMain) e.preventDefault();
-            }}
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '12px', 
-              textDecoration: 'none', 
-              color: 'inherit',
-              cursor: isAlreadyOnMain ? 'default' : 'pointer'
-            }}
+        <motion.div whileHover={{ scale: 1.02 }} transition={spring}>
+          <NavLink
+            to={mainPath}
+            onClick={(e) => { if (isAlreadyOnMain) e.preventDefault(); }}
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: 'inherit' }}
           >
-            <img 
-              src="/logo.png" 
-              alt="CodeAI Logo" 
-              style={{ width: '36px', height: '36px', objectFit: 'contain' }} 
-            />
-            <span className="heading" style={{ fontSize: '1.4rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
-              Code<span style={{ color: 'var(--brand-primary)' }}>AI</span>
+            <img src="/logo.png" alt="CodeAI" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+            <span style={{
+              fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.04em',
+            }}>
+              <span style={{ color: 'var(--text-primary)' }}>Code</span><span style={{ color: '#8b5cf6' }}>AI</span>
             </span>
           </NavLink>
-        </div>
+        </motion.div>
 
-        {/* Desktop Nav Links */}
-        <div className="nav-links" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <a 
-            href="https://youtu.be/Q_nLB-VYixs?si=3HMTGzG52Q-7ALV3" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500 }}
+        {/* Right Side: Nav Links & Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+          {/* Desktop Nav Links */}
+          <div
+            className="nav-links"
+            style={{ display: 'flex', gap: '28px', alignItems: 'center' }}
           >
-            {t('community')}
-          </a>
-          <NavLink to="/courses" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500 }}>{t('courses')}</NavLink>
-          
+            <DesktopNavLink external href="https://linkedin.com/in/nurkhan-esenbek">{t('community')}</DesktopNavLink>
+            <DesktopNavLink to="/courses">{t('courses')}</DesktopNavLink>
+            {isAuthenticated && (
+              <DesktopNavLink to="/dashboard">
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <LayoutDashboard size={15} />
+                  {t('dashboard')}
+                </span>
+              </DesktopNavLink>
+            )}
+          </div>
+
+          {/* Desktop Right Controls */}
+        <div
+          className="nav-right-desktop"
+          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
           {isAuthenticated ? (
             <>
-              <NavLink to="/dashboard" style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <LayoutDashboard size={16} /> {t('dashboard')}
-              </NavLink>
 
-              {/* Notification Bell */}
-              <div style={{ position: 'relative' }}>
-                <button 
-                  ref={bellRef}
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--text-primary)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '6px',
-                    borderRadius: '50%',
-                    transition: 'background 0.2s',
-                    position: 'relative'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--overlay-bg)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
-                >
-                  <Bell size={20} />
-                  {unreadNotificationsCount > 0 && (
-                    <span style={{
-                      position: 'absolute',
-                      top: '2px',
-                      right: '2px',
-                      width: '18px',
-                      height: '18px',
-                      background: 'var(--badge-bg)',
-                      border: '2px solid var(--bg-card)',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      color: 'white',
-                      fontSize: '10px',
-                      fontWeight: 'bold'
-                    }}>
-                      {unreadNotificationsCount}
-                    </span>
-                  )}
-                </button>
 
-                {/* Notification Dropdown */}
-                {showNotifications && (
-                  <div 
-                    ref={dropdownRef}
-                    style={{
-                      position: 'absolute',
-                      top: '40px',
-                      right: '0',
-                      width: '360px',
-                      maxHeight: '450px',
-                      background: 'var(--surface-raised)',
-                      border: '1px solid var(--border-subtle)',
-                      borderRadius: '12px',
-                      boxShadow: 'var(--dropdown-shadow)',
-                      zIndex: 1001,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      overflow: 'hidden'
-                    }}
-                  >
-                    <div style={{
-                      padding: '16px',
-                      borderBottom: '1px solid var(--border-subtle)',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
-                      <span style={{ fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-primary)' }}>{t('notificationsTitle')}</span>
-                      {notifications.length > 0 && (
-                        <button 
-                          onClick={markAllNotificationsAsRead}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: 'var(--brand-primary)',
-                            fontSize: '0.8rem',
-                            fontWeight: '600',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          {t('markAllRead')}
-                        </button>
-                      )}
-                    </div>
-
-                    <div style={{ overflowY: 'auto', flex: 1 }}>
-                      {notifications.length === 0 ? (
-                        <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                          <Bell size={32} style={{ marginBottom: '8px', opacity: 0.3 }} />
-                          <p style={{ fontSize: '0.9rem' }}>{t('noNotifications')}</p>
-                        </div>
-                      ) : (
-                        notifications.map(n => (
-                          <div 
-                            key={n.id}
-                            style={{
-                              padding: '14px 16px',
-                              borderBottom: '1px solid var(--border-subtle)',
-                              display: 'flex',
-                              gap: '12px',
-                              cursor: 'pointer',
-                              background: n.is_read ? 'transparent' : 'var(--brand-glow)',
-                              transition: 'background 0.2s',
-                              position: 'relative'
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--overlay-bg)'}
-                            onMouseLeave={(e) => e.currentTarget.style.background = n.is_read ? 'transparent' : 'var(--brand-glow)'}
-                            onClick={() => handleNotificationClick(n)}
-                          >
-                            <div style={{ flexShrink: 0, marginTop: '2px' }}>
-                              {getNotificationIcon(n.type)}
-                            </div>
-                            <div style={{ flex: 1, textAlign: 'left' }}>
-                              <h4 style={{
-                                fontSize: '0.85rem',
-                                fontWeight: n.is_read ? '600' : '800',
-                                color: 'var(--text-primary)',
-                                margin: '0 0 4px 0',
-                                lineHeight: '1.2'
-                              }}>
-                                {n.title}
-                              </h4>
-                              <p style={{
-                                fontSize: '0.75rem',
-                                color: 'var(--text-muted)',
-                                margin: '0',
-                                lineHeight: '1.3'
-                              }}>
-                                {n.message}
-                              </p>
-                              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block', marginTop: '6px' }}>
-                                {new Date(n.created_at || n.createdAt).toLocaleString(language, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                              </span>
-                            </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteNotification(n.id);
-                              }}
-                              title={t('clearNotification')}
-                              style={{
-                                background: 'none',
-                                border: 'none',
-                                color: 'var(--text-muted)',
-                                cursor: 'pointer',
-                                padding: '4px',
-                                alignSelf: 'flex-start',
-                                opacity: 0.5,
-                                transition: 'opacity 0.2s'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.opacity = 1;
-                                e.currentTarget.style.color = 'var(--danger)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.opacity = 0.5;
-                                e.currentTarget.style.color = 'var(--text-muted)';
-                              }}
-                            >
-                              <X size={14} />
-                            </button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* User Avatar */}
-              <NavLink to="/profile" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-                <div 
-                  style={{ 
-                    width: '36px', 
-                    height: '36px', 
-                    borderRadius: '50%', 
-                    background: 'var(--brand-primary)', 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center',
-                    color: 'white',
-                    fontWeight: '700',
-                    fontSize: '0.85rem',
+              {/* Avatar */}
+              <motion.div whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.95 }} transition={spring}>
+                <NavLink to="/profile" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+                  <div style={{
+                    width: '34px', height: '34px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, var(--brand-500), var(--violet-500))',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center',
+                    color: 'white', fontWeight: 700, fontSize: '0.8rem',
                     overflow: 'hidden',
-                    border: '2px solid var(--border-subtle)',
-                    boxShadow: 'var(--card-shadow)'
-                  }}
-                >
-                  {avatarUrl ? (
-                    <img 
-                      src={avatarUrl} 
-                      alt={user.name} 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                    />
-                  ) : (
-                    getInitials(user.name)
-                  )}
-                </div>
-              </NavLink>
+                    border: '2px solid var(--glass-border)',
+                    boxShadow: '0 0 0 2px var(--brand-glow)',
+                  }}>
+                    {avatarUrl
+                      ? <img src={avatarUrl} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : getInitials(user.name)
+                    }
+                  </div>
+                </NavLink>
+              </motion.div>
             </>
           ) : (
-            <>
-              <NavLink to="/login" className="btn btn-outline" style={{ padding: '8px 20px', textDecoration: 'none' }}>{t('login')}</NavLink>
-              <NavLink to="/register" className="btn btn-primary" style={{ padding: '8px 20px', textDecoration: 'none', color: 'white' }}>{t('joinNow')}</NavLink>
-            </>
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={spring}>
+              <NavLink to="/login" className="btn btn-primary btn-sm">
+                {t('login')}
+              </NavLink>
+            </motion.div>
           )}
 
           {/* Theme Toggle */}
-          <button 
+          <motion.button
+            whileHover={{ scale: 1.08, rotate: 15 }}
+            whileTap={{ scale: 0.92 }}
+            transition={spring}
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             style={{
-              background: 'var(--overlay-bg)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: '8px',
-              color: 'var(--text-primary)',
-              padding: '6px 12px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              background: 'transparent', border: 'none',
+              borderRadius: '10px', color: 'var(--text-muted)',
+              padding: '8px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              height: '36px', width: '36px',
             }}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--overlay-bg)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             title="Toggle Theme"
           >
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
+          </motion.button>
 
-          <select 
-            value={language} 
-            onChange={(e) => setLanguage(e.target.value)} 
-            style={{
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: '8px',
-              color: 'var(--text-primary)',
-              padding: '6px 12px',
-              outline: 'none',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-              fontFamily: "'Inter', sans-serif"
-            }}
-          >
-            <option value="ru" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>RU</option>
-            <option value="kz" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>KZ</option>
-            <option value="en" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>EN</option>
-          </select>
+          <LanguageSwitcher language={language} setLanguage={setLanguage} />
+        </div>
         </div>
 
-        {/* Mobile Right Side: theme + lang + hamburger */}
-        <div className="mobile-hamburger" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* Theme Toggle (mobile) */}
+        {/* Mobile Right Side */}
+        <div className="mobile-hamburger" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             style={{
-              background: 'var(--overlay-bg)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: '8px',
-              color: 'var(--text-primary)',
-              padding: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: 'unset',
-              height: '36px',
-              width: '36px',
+              background: 'transparent', border: 'none', borderRadius: '8px',
+              color: 'var(--text-muted)', padding: '8px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center',
             }}
           >
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </button>
-
-          {/* Hamburger Button */}
           <button
-            onClick={() => setShowMobileMenu(true)}
+            ref={hamburgerRef}
+            onClick={() => setShowMobileMenu(prev => !prev)}
             style={{
-              background: 'var(--overlay-bg)',
-              border: '1px solid var(--border-subtle)',
-              borderRadius: '8px',
-              color: 'var(--text-primary)',
-              padding: '8px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: 'unset',
-              height: '36px',
-              width: '36px',
+              background: showMobileMenu ? 'var(--brand-glow)' : 'var(--overlay-bg)',
+              border: `1px solid ${showMobileMenu ? 'var(--brand-primary)' : 'var(--border-subtle)'}`,
+              borderRadius: '10px', color: showMobileMenu ? 'var(--brand-primary)' : 'var(--text-primary)', padding: '8px',
+              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              transition: 'all 0.2s ease',
             }}
             aria-label="Menu"
           >
-            <Menu size={20} />
+            <Menu size={18} />
           </button>
         </div>
-      </nav>
+      </motion.nav>
 
-      {/* Mobile Menu Drawer */}
-      {showMobileMenu && (
-        <>
-          <div className="mobile-menu-overlay" onClick={() => setShowMobileMenu(false)} />
-          <div className="mobile-menu-panel" ref={mobileMenuRef}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <span className="heading" style={{ fontSize: '1.2rem', fontWeight: 800 }}>
-                Code<span style={{ color: 'var(--brand-primary)' }}>AI</span>
-              </span>
-              <button
-                onClick={() => setShowMobileMenu(false)}
-                style={{ background: 'var(--overlay-bg)', border: '1px solid var(--border-subtle)', borderRadius: '8px', color: 'var(--text-muted)', padding: '6px', cursor: 'pointer', display: 'flex' }}
-              >
-                <X size={18} />
-              </button>
-            </div>
+      {/* ── Mobile Menu Drawer ─────────────────────────────────── */}
+      <AnimatePresence>
+        {showMobileMenu && (
+          <>
+            {/* Overlay — starts below navbar */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setShowMobileMenu(false)}
+              style={{
+                position: 'fixed', top: '72px', left: 0, right: 0, bottom: 0, zIndex: 999,
+                background: 'oklch(0% 0 0 / 40%)',
+                backdropFilter: 'blur(4px)',
+                WebkitBackdropFilter: 'blur(4px)',
+              }}
+            />
 
-            {/* Nav Links */}
-            <NavLink to="/" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
-              <Home size={20} />
-              {t('home') || 'Главная'}
-            </NavLink>
-            <NavLink to="/courses" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
-              <BookOpen size={20} />
-              {t('courses')}
-            </NavLink>
-            <a
-              href="https://youtu.be/Q_nLB-VYixs?si=3HMTGzG52Q-7ALV3"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mobile-menu-link"
+            {/* Panel — starts below navbar */}
+            <motion.div
+              ref={mobileMenuRef}
+              initial={{ x: '100%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '100%', opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                position: 'fixed', top: '72px', right: 0, bottom: 0,
+                width: 'min(300px, 90vw)',
+                background: 'var(--glass-bg)',
+                backdropFilter: 'blur(24px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+                borderLeft: '1px solid var(--glass-border)',
+                borderTop: '1px solid var(--glass-border)',
+                borderRadius: '16px 0 0 0',
+                zIndex: 1001,
+                display: 'flex', flexDirection: 'column',
+                padding: '12px 14px 20px',
+                gap: '4px',
+                boxShadow: '-8px 8px 32px oklch(0% 0 0 / 20%)',
+                overflowY: 'auto',
+              }}
             >
-              <GitBranch size={20} />
-              {t('community')}
-            </a>
+              <NavLink to="/courses" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
+                <BookOpen size={18} /> {t('courses')}
+              </NavLink>
+              <a href="https://linkedin.com/in/nurkhan-esenbek" target="_blank" rel="noopener noreferrer" className="mobile-menu-link">
+                <GitBranch size={18} /> {t('community')}
+              </a>
 
-            {isAuthenticated ? (
-              <>
-                <div className="mobile-menu-divider" />
-                <NavLink to="/dashboard" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
-                  <LayoutDashboard size={20} />
-                  {t('dashboard')}
-                </NavLink>
-                <NavLink to="/challenges" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
-                  <Terminal size={20} />
-                  {t('challenges') || 'Задачи'}
-                </NavLink>
-                <div className="mobile-menu-divider" />
-                <NavLink to="/profile" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
-                  <User size={20} />
-                  {t('profile')}
-                </NavLink>
-                <NavLink to="/settings" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
-                  <SettingsIcon size={20} />
-                  {t('settings')}
-                </NavLink>
-              </>
-            ) : (
-              <>
-                <div className="mobile-menu-divider" />
-                <NavLink to="/login" className="mobile-menu-link" style={{ color: 'var(--text-primary)' }}>
-                  <LogIn size={20} />
-                  {t('login')}
-                </NavLink>
-                <NavLink to="/register" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '13px 16px', borderRadius: '12px', background: 'var(--brand-primary)', color: 'white', textDecoration: 'none', fontWeight: 600, fontSize: '1rem', marginTop: '4px' }}>
-                  <UserPlus size={20} />
-                  {t('joinNow') || 'Регистрация'}
-                </NavLink>
-              </>
-            )}
-
-            {/* Language Selector */}
-            <div className="mobile-menu-divider" />
-            <div style={{ padding: '4px 8px' }}>
-              <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Язык / Language</p>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {['ru', 'kz', 'en'].map(lang => (
-                  <button
-                    key={lang}
-                    onClick={() => setLanguage(lang)}
+              {isAuthenticated ? (
+                <>
+                  <div className="mobile-menu-divider" />
+                  <NavLink to="/dashboard" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
+                    <LayoutDashboard size={18} /> {t('dashboard')}
+                  </NavLink>
+                  <NavLink to="/challenges" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
+                    <Terminal size={18} /> {t('challenges') || 'Challenges'}
+                  </NavLink>
+                  <div className="mobile-menu-divider" />
+                  <NavLink to="/profile" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
+                    <User size={18} /> {t('profile')}
+                  </NavLink>
+                  <NavLink to="/settings" className={({ isActive }) => `mobile-menu-link${isActive ? ' active' : ''}`}>
+                    <SettingsIcon size={18} /> {t('settings')}
+                  </NavLink>
+                </>
+              ) : (
+                <>
+                  <div className="mobile-menu-divider" />
+                  <NavLink
+                    to="/login"
                     style={{
-                      flex: 1,
-                      padding: '8px',
-                      borderRadius: '8px',
-                      border: '1px solid var(--border-subtle)',
-                      background: language === lang ? 'var(--brand-primary)' : 'var(--overlay-bg)',
-                      color: language === lang ? 'white' : 'var(--text-muted)',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      fontSize: '0.85rem',
-                      textTransform: 'uppercase',
-                      minHeight: 'unset',
-                      height: '38px'
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '13px 16px', borderRadius: '12px',
+                      background: 'linear-gradient(135deg, var(--brand-500), var(--brand-600))',
+                      color: 'white', textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem',
                     }}
                   >
-                    {lang}
-                  </button>
-                ))}
+                    <LogIn size={18} /> {t('login')}
+                  </NavLink>
+                </>
+              )}
+
+              {/* Language Switcher (mobile) */}
+              <div className="mobile-menu-divider" />
+              <div style={{ padding: '4px 6px' }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '8px' }}>
+                  Language
+                </p>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  {['ru', 'kz', 'en'].map(lang => (
+                    <button
+                      key={lang}
+                      onClick={() => setLanguage(lang)}
+                      style={{
+                        flex: 1, padding: '8px',
+                        borderRadius: '10px',
+                        border: `1px solid ${language === lang ? 'var(--brand-primary)' : 'var(--border-subtle)'}`,
+                        background: language === lang
+                          ? 'linear-gradient(135deg, var(--brand-500), var(--brand-600))'
+                          : 'var(--overlay-bg)',
+                        color: language === lang ? 'white' : 'var(--text-muted)',
+                        fontWeight: 700, cursor: 'pointer',
+                        fontSize: '0.8rem', textTransform: 'uppercase',
+                        fontFamily: 'Inter, sans-serif', minHeight: 'unset', height: '36px',
+                      }}
+                    >
+                      {lang}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
-        </>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };

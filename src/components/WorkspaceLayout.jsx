@@ -288,7 +288,7 @@ const WorkspaceLayout = () => {
     panelBg: 'var(--bg-sidebar)',
     panelBorder: 'var(--border-subtle)',
     statusBarBg: 'var(--status-bar-bg)',
-    statusBarFg: '#ffffff',
+    statusBarFg: 'var(--status-bar-fg)',
     textMain: 'var(--text-primary)',
     border: 'var(--border-subtle)',
     buttonPrimary: 'var(--brand-primary)'
