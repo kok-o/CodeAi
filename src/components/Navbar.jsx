@@ -59,30 +59,15 @@ const LanguageSwitcher = ({ language, setLanguage }) => {
           border: `1px solid ${isOpen ? 'var(--border-accent)' : 'transparent'}`,
           borderRadius: '10px',
           color: 'var(--text-primary)',
-          padding: (isHovered || isOpen) ? '7px 12px' : '7px 10px',
+          padding: '8px',
           cursor: 'pointer',
-          display: 'flex', alignItems: 'center', gap: '0px',
-          fontSize: '0.82rem', fontWeight: 600,
-          transition: 'all 0.25s var(--ease-out)',
-          height: '36px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'all 0.2s ease',
+          height: '36px', width: '36px',
         }}
+        title="Change Language"
       >
-        <Globe size={15} style={{ flexShrink: 0 }} />
-        <span style={{
-            display: 'inline-flex', alignItems: 'center',
-            overflow: 'hidden',
-            maxWidth: (isHovered || isOpen) ? '50px' : '0px',
-            opacity: (isHovered || isOpen) ? 1 : 0,
-            transition: 'all 0.25s var(--ease-out)',
-            whiteSpace: 'nowrap'
-        }}>
-          <span style={{ marginLeft: '6px' }}>{currentLang.short}</span>
-          <ChevronDown size={12} style={{
-            marginLeft: '4px',
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s',
-          }} />
-        </span>
+        <Globe size={16} />
       </button>
 
       <AnimatePresence>
@@ -331,9 +316,6 @@ const Navbar = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
           position: 'fixed',
           top: 0, left: 0, right: 0,
           zIndex: 99999,
@@ -349,10 +331,18 @@ const Navbar = () => {
             : '1px solid color-mix(in srgb, var(--glass-border) 60%, transparent)',
           boxShadow: scrolled
             ? 'var(--card-shadow)'
-            : '0 2px 12px color-mix(in srgb, var(--brand-primary) 8%, transparent)',
+            : 'none',
           transition: 'background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease',
         }}
       >
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          maxWidth: '1100px',
+          margin: '0 auto',
+          width: '100%',
+        }}>
         {/* Logo */}
         <motion.div whileHover={{ scale: 1.02 }} transition={spring}>
           <NavLink
@@ -370,11 +360,11 @@ const Navbar = () => {
         </motion.div>
 
         {/* Right Side: Nav Links & Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
           {/* Desktop Nav Links */}
           <div
             className="nav-links"
-            style={{ display: 'flex', gap: '28px', alignItems: 'center' }}
+            style={{ display: 'flex', gap: '24px', alignItems: 'center' }}
           >
             <DesktopNavLink external href="https://linkedin.com/in/nurkhan-esenbek">{t('community')}</DesktopNavLink>
             <DesktopNavLink to="/courses">{t('courses')}</DesktopNavLink>
@@ -391,7 +381,7 @@ const Navbar = () => {
           {/* Desktop Right Controls */}
         <div
           className="nav-right-desktop"
-          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
         >
           {isAuthenticated ? (
             <>
@@ -427,7 +417,7 @@ const Navbar = () => {
 
           {/* Theme Toggle */}
           <motion.button
-            whileHover={{ scale: 1.08, rotate: 15 }}
+            whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
             transition={spring}
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -464,17 +454,19 @@ const Navbar = () => {
           <button
             ref={hamburgerRef}
             onClick={() => setShowMobileMenu(prev => !prev)}
+            onMouseEnter={e => e.currentTarget.style.background = 'var(--overlay-bg)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             style={{
-              background: showMobileMenu ? 'var(--brand-glow)' : 'var(--overlay-bg)',
-              border: `1px solid ${showMobileMenu ? 'var(--brand-primary)' : 'var(--border-subtle)'}`,
-              borderRadius: '10px', color: showMobileMenu ? 'var(--brand-primary)' : 'var(--text-primary)', padding: '8px',
-              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              background: 'transparent', border: 'none', borderRadius: '8px',
+              color: 'var(--text-primary)', padding: '8px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center',
               transition: 'all 0.2s ease',
             }}
             aria-label="Menu"
           >
             <Menu size={18} />
           </button>
+        </div>
         </div>
       </motion.nav>
 

@@ -124,7 +124,7 @@
   --violet-500: #a78bfa;
 
   /* Stars background colors for dark theme */
-  --stars-bg-color: #080C16;
+  --stars-bg-color: #0A0A0A;
   --stars-dot-color: rgba(255, 255, 255, 0.8);
   --stars-line-color: rgba(255, 255, 255, 0.4);
   
@@ -575,7 +575,7 @@ code, pre, .font-mono {
   width: 100%;
   height: 100vh;
   z-index: -1;
-  background: var(--stars-bg-color, #080C16);
+  background: var(--stars-bg-color, #0A0A0A);
   -webkit-transition: background 0.4s ease-in-out;
   -moz-transition: background 0.4s ease-in-out;
   -ms-transition: background 0.4s ease-in-out;
@@ -924,25 +924,13 @@ code, pre, .font-mono {
   overflow: hidden;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--brand-500), var(--violet-500));
-  opacity: 0;
-  transition: opacity 220ms;
-}
 
 .stat-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
-  border-color: var(--border-accent);
 }
 
-.stat-card:hover::before { opacity: 1; }
+
 
 .stat-card .stat-value {
   font-size: 2rem;

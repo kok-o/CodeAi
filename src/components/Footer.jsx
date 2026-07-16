@@ -19,7 +19,7 @@ const LinkedinIcon = ({ size = 24, ...props }) => (
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { isAuthenticated, user } = useContext(AppContext);
+  const { t, isAuthenticated, user } = useContext(AppContext);
 
   const getMainScreenPath = () => {
     if (!isAuthenticated) return '/';
@@ -66,10 +66,10 @@ const Footer = () => {
                 onMouseEnter={(e) => e.target.style.color = 'var(--brand-primary)'}
                 onMouseLeave={(e) => e.target.style.color = 'var(--text-primary)'}
               >
-                Nurkhan Esenbek
+                Code<span style={{ color: 'var(--violet-500)' }}>AI</span>
               </Link>
               <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                Frontend Developer
+                {t('footerRole')}
               </p>
             </div>
           </div>
@@ -133,6 +133,20 @@ const Footer = () => {
           </ul>
         </div>
 
+        <div style={{
+          width: '100%',
+          height: '1px',
+          background: 'var(--border-subtle)',
+          marginTop: '16px'
+        }}></div>
+
+        <div style={{
+          textAlign: 'center',
+          color: 'var(--text-muted)',
+          fontSize: 'var(--text-xs)'
+        }}>
+          &copy; 2026 Nurkhan Esenbek. Frontend Developer.
+        </div>
 
       </div>
     </footer>

@@ -365,6 +365,7 @@ export const translations = {
     sortNewest: `Сначала новые`,
     sortPopular: `Популярные`,
     sortRating: `По рейтингу`,
+    footerRole: `AI учитель`,
   },
   kz: {
     challenge_1_title: `Сөзді кері аудару (Reverse a String)`,
@@ -742,6 +743,7 @@ export const translations = {
     sortNewest: `Алдымен жаңалары`,
     sortPopular: `Танымал`,
     sortRating: `Рейтинг бойынша`,
+    footerRole: `AI мұғалімі`,
   },
   en: {
     challenge_1_title: `Reverse a String`,
@@ -1118,6 +1120,7 @@ export const translations = {
     sortAll: `All`,
     sortNewest: `Newest first`,
     sortPopular: `Popular`,
-    sortRating: `By rating`,
+    sortRating: `By Rating`,
+    footerRole: `AI Teacher`,
   },
 };

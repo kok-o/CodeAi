@@ -183,57 +183,6 @@ function App() {
 
   return (
     <Router>
-      {/* Ambient global background (behind everything) */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: -1,
-          pointerEvents: 'none',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Primary aurora blob */}
-        <div style={{
-          position: 'absolute',
-          top: '-15%',
-          right: '-10%',
-          width: '600px',
-          height: '600px',
-          background: 'oklch(58% 0.25 274 / 12%)',
-          borderRadius: '50%',
-          filter: 'blur(120px)',
-          animation: 'blobFloat 18s ease-in-out infinite',
-        }} />
-        {/* Secondary aurora blob */}
-        <div style={{
-          position: 'absolute',
-          bottom: '-10%',
-          left: '-5%',
-          width: '500px',
-          height: '500px',
-          background: 'oklch(61% 0.26 300 / 10%)',
-          borderRadius: '50%',
-          filter: 'blur(120px)',
-          animation: 'blobFloat 22s ease-in-out infinite',
-          animationDelay: '-9s',
-        }} />
-        {/* Tertiary blue blob */}
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '40%',
-          width: '400px',
-          height: '400px',
-          background: 'oklch(65% 0.22 240 / 8%)',
-          borderRadius: '50%',
-          filter: 'blur(100px)',
-          animation: 'blobFloat 26s ease-in-out infinite',
-          animationDelay: '-4s',
-        }} />
-      </div>
-
       <AnimatedRoutes />
     </Router>
   );

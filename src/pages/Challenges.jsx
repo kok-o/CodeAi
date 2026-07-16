@@ -78,7 +78,7 @@ const Challenges = () => {
   });
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: 'transparent', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', height: '100%', background: 'transparent', overflow: 'hidden' }}>
       <style>{`
         .ch-card { 
           background: var(--overlay-bg); 
@@ -96,7 +96,7 @@ const Challenges = () => {
           background: var(--overlay-bg); 
           border-color: var(--overlay-bg-hover); 
           transform: translateY(-2px); 
-          box-shadow: 0 8px 25px var(--dropdown-shadow), 0 0 15px var(--brand-glow); 
+          box-shadow: 0 8px 25px var(--dropdown-shadow); 
         }
         .diff-badge { 
           padding: 4px 12px; 
@@ -159,8 +159,8 @@ const Challenges = () => {
           {/* Header */}
           <div style={{ marginBottom: '36px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-secondary))', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(99,102,241,0.25)' }}>
-                <Code2 size={28} color="white" />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Code2 size={40} color="var(--text-primary)" />
               </div>
               <div>
                 <h1 style={{ fontSize: '2.2rem', fontWeight: 800, letterSpacing: '-0.5px', color: 'var(--text-primary)', margin: 0 }}>
@@ -267,9 +267,6 @@ const Challenges = () => {
                       <div style={{ fontWeight: 700, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: 'var(--text-primary)', wordBreak: 'break-word' }}>
                         <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>#{challenge.id}</span>
                         {tr(`challenge_${challenge.id}_title`, challenge.title)}
-                        {challenge.user_status === 'accepted' && (
-                          <span style={{ fontSize: '0.7rem', background: 'rgba(52,211,153,0.1)', color: 'var(--success, #34d399)', padding: '2px 8px', borderRadius: '8px', fontWeight: 800, border: '1px solid rgba(52,211,153,0.2)' }}>✓ {tr('solved', 'РЕШЕНО').toUpperCase()}</span>
-                        )}
                       </div>
                       {challenge.tags?.length > 0 && (
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -282,17 +279,20 @@ const Challenges = () => {
                       )}
                     </div>
 
-                    {/* Accept rate — hidden on small screens */}
-                    {acceptRate !== null && (
-                      <div className="hide-on-mobile" style={{ textAlign: 'right', minWidth: '80px', flexShrink: 0, background: 'var(--overlay-bg)', padding: '6px 12px', borderRadius: '10px', border: '1px solid var(--overlay-bg)' }}>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.5px' }}>{tr('acceptRate', 'Принято')}</div>
-                        <div style={{ fontWeight: 800, color: acceptRate > 50 ? 'var(--success, #34d399)' : 'var(--warning)', fontSize: '0.95rem' }}>{acceptRate}%</div>
-                      </div>
-                    )}
+                    {/* Right side stats */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '32px', paddingRight: '8px' }}>
+                      {/* Accept rate */}
+                      {acceptRate !== null && (
+                        <div className="hide-on-mobile" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.5px' }}>{tr('acceptRate', 'Принято')}</span>
+                          <span style={{ fontWeight: 800, color: acceptRate > 50 ? 'var(--success, #34d399)' : 'var(--warning)', fontSize: '1rem' }}>{acceptRate}%</span>
+                        </div>
+                      )}
 
-                    {/* Difficulty badge */}
-                    <div className="diff-badge" style={{ color: diffColor, background: `color-mix(in srgb, ${diffColor} 10%, transparent)`, border: `1px solid color-mix(in srgb, ${diffColor} 20%, transparent)`, flexShrink: 0 }}>
-                      {tDiff(challenge.difficulty)}
+                      {/* Difficulty text */}
+                      <span style={{ color: diffColor, fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px', minWidth: '80px', textAlign: 'right' }}>
+                        {tDiff(challenge.difficulty)}
+                      </span>
                     </div>
 
                     <ChevronRight size={20} style={{ color: 'var(--text-muted)', flexShrink: 0, opacity: 0.5 }} />

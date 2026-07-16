@@ -129,7 +129,11 @@ const Auth = ({ type = 'login' }) => {
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', width: '100%', background: '#000000' }}>
+    <div style={{
+      display: 'flex', minHeight: '100vh', width: '100%',
+      backgroundColor: 'var(--bg-main)',
+      backgroundImage: 'radial-gradient(circle at center, color-mix(in srgb, var(--text-primary) 7%, transparent) 0%, transparent 60%)'
+    }}>
 
       {/* ── Left Panel (Marketing) ─────────────────────────── */}
       <div
@@ -145,28 +149,8 @@ const Auth = ({ type = 'login' }) => {
           overflow: 'hidden',
         }}
       >
-        {/* Aurora blobs */}
-        <motion.div
-          animate={{ x: [0, 30, 0], y: [0, -30, 0], scale: [1, 1.1, 1] }}
-          transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-          style={{
-            position: 'absolute', top: '-15%', right: '-15%',
-            width: '450px', height: '450px',
-            background: 'oklch(58% 0.25 274 / 18%)',
-            borderRadius: '50%', filter: 'blur(90px)', pointerEvents: 'none',
-          }}
-        />
-        <motion.div
-          animate={{ x: [0, -20, 0], y: [0, 20, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: -8 }}
-          style={{
-            position: 'absolute', bottom: '-10%', left: '-10%',
-            width: '350px', height: '350px',
-            background: 'oklch(61% 0.26 300 / 14%)',
-            borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none',
-          }}
-        />
-
+        {/* Removed Aurora blobs in favor of global radial shadow */}
+        
         <motion.div
           variants={staggerContainer}
           initial="hidden"
@@ -231,14 +215,7 @@ const Auth = ({ type = 'login' }) => {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Mobile blobs */}
-        <div className="mobile-only" style={{
-          position: 'absolute', top: '-10%', right: '-10%',
-          width: '300px', height: '300px',
-          background: 'oklch(58% 0.25 274 / 15%)',
-          borderRadius: '50%', filter: 'blur(70px)',
-          pointerEvents: 'none', zIndex: 0,
-        }} />
+        {/* Removed Mobile blobs */}
 
         <motion.div
           variants={scaleIn}
@@ -247,11 +224,11 @@ const Auth = ({ type = 'login' }) => {
           style={{
             width: '100%',
             maxWidth: '400px',
-            background: '#09090b',
-            border: '1px solid #1f1f22',
+            background: 'var(--bg-sidebar)',
+            border: '1px solid var(--border-subtle)',
             borderRadius: '28px',
             padding: '52px 48px',
-            boxShadow: 'var(--glass-shadow), 0 0 0 1px var(--glass-border)',
+            boxShadow: 'var(--shadow-lg)',
             position: 'relative',
             zIndex: 1,
           }}

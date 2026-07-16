@@ -108,7 +108,7 @@ const CodeTyping = ({ language }) => {
           userSelect: 'none', alignItems: 'flex-end',
           fontSize: '0.75rem', opacity: 0.5,
         }}>
-          {[1,2,3,4,5,6,7].map(n => <span key={n}>{n}</span>)}
+          {[1, 2, 3, 4, 5, 6, 7].map(n => <span key={n}>{n}</span>)}
         </div>
         <pre style={{ margin: 0, whiteSpace: 'pre-wrap', flex: 1, position: 'relative' }}>
           <span dangerouslySetInnerHTML={{ __html: highlightCode(displayedText) }} />
@@ -223,15 +223,14 @@ const LandingPage = () => {
             }}
           >
             {t('landingTitle1')} <br />
-            <span style={{
-              background: 'linear-gradient(135deg, var(--brand-300) 0%, var(--brand-500) 40%, var(--violet-500) 75%, var(--brand-400) 100%)',
-              backgroundSize: '200% 200%',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              animation: 'gradientShift 5s ease infinite',
-            }}>
-              {t('landingTitle2')}
+            <span>
+              {t('landingTitle2').split(/(AI\.?)/g).map((part, i) => 
+                part.startsWith('AI') ? (
+                  <span key={i} style={{ color: 'var(--violet-500)' }}>{part}</span>
+                ) : (
+                  <span key={i} style={{ color: 'var(--text-primary)' }}>{part}</span>
+                )
+              )}
             </span>
           </motion.h1>
 
